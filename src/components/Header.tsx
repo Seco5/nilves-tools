@@ -2,14 +2,23 @@
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useTheme } from '@/contexts/ThemeContext'
-import { Sun, Moon } from 'lucide-react'
+import { useSidebar } from '@/contexts/SidebarContext'
+import { Sun, Moon, Menu } from 'lucide-react'
 
 export default function Header() {
   const { lang, setLang, t } = useLanguage()
   const { theme, toggle } = useTheme()
+  const { toggle: toggleSidebar } = useSidebar()
 
   return (
     <header className="site-header">
+      <button
+        className="nav-burger"
+        onClick={toggleSidebar}
+        aria-label="Toggle menu"
+      >
+        <Menu size={20} strokeWidth={2} />
+      </button>
       <Link href="/" className="logo">
         <div className="logo-mark">
           <svg viewBox="0 0 24 24" width={16} height={16} fill="#fff" aria-hidden="true">

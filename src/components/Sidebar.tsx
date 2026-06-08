@@ -1,7 +1,9 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useSidebar } from '@/contexts/SidebarContext'
 import { ToolIcon } from '@/lib/icons'
 import { Home } from 'lucide-react'
 
@@ -64,9 +66,19 @@ const items: Item[] = [
 export default function Sidebar() {
   const pathname = usePathname()
   const { t } = useLanguage()
+  const { open, close } = useSidebar()
+
+  // Close the drawer whenever the route changes (mobile)
+  useEffect(() => { close() }, [pathname, close])
 
   return (
-    <nav className="sidebar">
+    <>
+      <div
+        className={`sidebar-overlay${open ? ' show' : ''}`}
+        onClick={close}
+        aria-hidden="true"
+      />
+      <nav className={`sidebar${open ? ' open' : ''}`}>
       {items.map((item, i) => {
         if (item.kind === 'section') {
           return (
@@ -92,6 +104,7 @@ export default function Sidebar() {
           </Link>
         )
       })}
-    </nav>
+      </nav>
+    </>
   )
 }
