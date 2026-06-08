@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1)) + a }
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function makeCard(val: string, sub: string) {
-  return `<div class="gen-card"><div class="gen-card-title">${sub}</div><div class="gen-result" onclick="navigator.clipboard.writeText(${JSON.stringify(val)}).then(()=>{const t=document.getElementById('__toast');if(t){t.textContent='Copied!';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}})"><span class="val">${esc(val)}</span><span class="copy-ic">⎘</span></div></div>`
+  const click = `navigator.clipboard.writeText(${JSON.stringify(val)}).then(()=>{const t=document.getElementById('__toast');if(t){t.textContent='Copied!';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}})`.replace(/"/g, '&quot;')
+  return `<div class="gen-card"><div class="gen-card-title">${sub}</div><div class="gen-result" onclick="${click}"><span class="val">${esc(val)}</span><span class="copy-ic">⎘</span></div></div>`
 }
 
 export default function PasswordGenerator() {

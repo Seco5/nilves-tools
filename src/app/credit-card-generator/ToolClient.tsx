@@ -36,7 +36,8 @@ export default function CreditCardGenerator() {
   const gen = (t = type, n = count) => {
     setGrid(Array.from({length: Math.min(20, n)}, () => {
       const no = genOneCC(t), exp = expiry(), cvv = t==='amex' ? String(ri(1000,9999)) : String(ri(100,999))
-      return `<div class="gen-card"><div class="gen-card-title">${t.toUpperCase()}</div><div class="gen-result" onclick="navigator.clipboard.writeText(${JSON.stringify(no)}).then(()=>{const t=document.getElementById('__toast');if(t){t.textContent='Copied!';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}})"><span class="val">${esc(no)}</span><span class="copy-ic">⎘</span></div><div style="display:flex;gap:12px;font-family:var(--mono);font-size:.7rem;color:var(--muted)"><span>EXP <span style="color:var(--text)">${exp}</span></span><span>CVV <span style="color:var(--text)">${cvv}</span></span></div></div>`
+      const click = `navigator.clipboard.writeText(${JSON.stringify(no)}).then(()=>{const t=document.getElementById('__toast');if(t){t.textContent='Copied!';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}})`.replace(/"/g, '&quot;')
+      return `<div class="gen-card"><div class="gen-card-title">${t.toUpperCase()}</div><div class="gen-result" onclick="${click}"><span class="val">${esc(no)}</span><span class="copy-ic">⎘</span></div><div style="display:flex;gap:12px;font-family:var(--mono);font-size:.7rem;color:var(--muted)"><span>EXP <span style="color:var(--text)">${exp}</span></span><span>CVV <span style="color:var(--text)">${cvv}</span></span></div></div>`
     }).join(''))
   }
 
