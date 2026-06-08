@@ -1,91 +1,94 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { ToolIcon } from '@/lib/icons'
+import { Home } from 'lucide-react'
 
-const navItems = [
-  { section: null, label: '🏠 Home', href: '/', icon: null, isHome: true },
-  { section: 'Formatters' },
-  { label: 'JSON Formatter', href: '/json-formatter', icon: '{ }' },
-  { label: 'Diff Checker', href: '/diff-checker', icon: '⇄' },
-  { label: 'CSV ↔ JSON', href: '/csv-json', icon: '⊞' },
-  { label: 'Markdown Preview', href: '/markdown-preview', icon: 'M↓' },
-  { section: 'Generators' },
-  { label: 'UUID / NanoID', href: '/uuid-generator', icon: '⊡' },
-  { label: 'Password', href: '/password-generator', icon: '🔑' },
-  { label: 'Hash (MD5/SHA)', href: '/hash-generator', icon: '⊕' },
-  { label: 'Lorem Ipsum', href: '/lorem-ipsum', icon: '¶' },
-  { label: 'Color Converter', href: '/color-converter', icon: '◉' },
-  { section: 'Encoders' },
-  { label: 'Base64', href: '/base64', icon: '64' },
-  { label: 'URL Encode/Decode', href: '/url-encode-decode', icon: '🔗' },
-  { label: 'JWT Decoder', href: '/jwt-decoder', icon: '🔐' },
-  { section: 'Converters' },
-  { label: 'Timestamp', href: '/timestamp', icon: '⏱' },
-  { label: 'Number Base', href: '/number-base', icon: '01' },
-  { label: 'Cron Expression', href: '/cron-expression', icon: '⏰' },
-  { section: 'Testers' },
-  { label: 'Regex Tester', href: '/regex-tester', icon: '.*' },
-  { section: '🇹🇷 Turkish' },
-  { label: 'TCKN Generator', href: '/tckn-generator', icon: '#' },
-  { label: 'VKN Generator', href: '/vkn-generator', icon: '#' },
-  { label: 'IBAN Generator', href: '/tr-iban-generator', icon: 'TR' },
-  { label: 'Credit Card No', href: '/credit-card-generator', icon: '▪' },
-  { label: 'Fake Person Data', href: '/fake-person-data', icon: '◈' },
-  { section: 'Education' },
-  { label: 'SQL Playground', href: '/sql-playground', icon: '⌗' },
+type SectionItem = { kind: 'section'; tkey: string; flag?: string }
+type NavItem = {
+  kind: 'link'
+  tkey?: string
+  label?: string
+  href: string
+  home?: boolean
+}
+type Item = SectionItem | NavItem
+
+const items: Item[] = [
+  { kind: 'link',    label: 'Home',                   href: '/',                      home: true },
+
+  { kind: 'section', tkey: 'nav.formatters' },
+  { kind: 'link',    tkey: 'tools.jsonFormatter',     href: '/json-formatter' },
+  { kind: 'link',    tkey: 'tools.diffChecker',       href: '/diff-checker' },
+  { kind: 'link',    tkey: 'tools.xmlFormatter',      href: '/xml-formatter' },
+  { kind: 'link',    tkey: 'tools.sqlFormatter',      href: '/sql-formatter' },
+  { kind: 'link',    tkey: 'tools.csvJson',           href: '/csv-json' },
+  { kind: 'link',    tkey: 'tools.markdownPreview',   href: '/markdown-preview' },
+
+  { kind: 'section', tkey: 'nav.generators' },
+  { kind: 'link',    tkey: 'tools.uuidGenerator',     href: '/uuid-generator' },
+  { kind: 'link',    tkey: 'tools.passwordGenerator', href: '/password-generator' },
+  { kind: 'link',    tkey: 'tools.hashGenerator',     href: '/hash-generator' },
+  { kind: 'link',    tkey: 'tools.loremIpsum',        href: '/lorem-ipsum' },
+  { kind: 'link',    tkey: 'tools.colorConverter',    href: '/color-converter' },
+  { kind: 'link',    tkey: 'tools.barcodeQr',         href: '/barcode-qr' },
+
+  { kind: 'section', tkey: 'nav.encoders' },
+  { kind: 'link',    tkey: 'tools.base64',            href: '/base64' },
+  { kind: 'link',    tkey: 'tools.urlEncodeDecode',   href: '/url-encode-decode' },
+  { kind: 'link',    tkey: 'tools.jwtDecoder',        href: '/jwt-decoder' },
+
+  { kind: 'section', tkey: 'nav.converters' },
+  { kind: 'link',    tkey: 'tools.timestamp',         href: '/timestamp' },
+  { kind: 'link',    tkey: 'tools.numberBase',        href: '/number-base' },
+  { kind: 'link',    tkey: 'tools.cronExpression',    href: '/cron-expression' },
+
+  { kind: 'section', tkey: 'nav.testers' },
+  { kind: 'link',    tkey: 'tools.regexTester',       href: '/regex-tester' },
+
+  { kind: 'section', tkey: 'nav.turkish', flag: '🇹🇷' },
+  { kind: 'link',    tkey: 'tools.tcknGenerator',     href: '/tckn-generator' },
+  { kind: 'link',    tkey: 'tools.vknGenerator',      href: '/vkn-generator' },
+  { kind: 'link',    tkey: 'tools.ibanGenerator',     href: '/tr-iban-generator' },
+  { kind: 'link',    tkey: 'tools.creditCard',        href: '/credit-card-generator' },
+  { kind: 'link',    tkey: 'tools.fakeData',          href: '/fake-person-data' },
+
+  { kind: 'section', tkey: 'nav.productivity' },
+  { kind: 'link',    tkey: 'tools.projectPlanner',    href: '/project-planner' },
+
+  { kind: 'section', tkey: 'nav.education' },
+  { kind: 'link',    tkey: 'tools.sqlPlayground',     href: '/sql-playground' },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { t } = useLanguage()
 
   return (
-    <nav style={{
-      width: 'var(--sidebar)', flexShrink: 0,
-      background: 'var(--surface)', borderRight: '1px solid var(--border)',
-      display: 'flex', flexDirection: 'column', overflowY: 'auto',
-      padding: '8px 8px 16px'
-    }}>
-      {navItems.map((item, i) => {
-        if ('section' in item && item.section) {
+    <nav className="sidebar">
+      {items.map((item, i) => {
+        if (item.kind === 'section') {
           return (
-            <div key={i} style={{
-              fontSize: '.62rem', fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase',
-              color: 'var(--muted)', padding: '10px 10px 4px', marginTop: 4
-            }}>{item.section}</div>
+            <div key={i} className="nav-section">
+              {item.flag ? `${item.flag} ` : ''}{t(item.tkey)}
+            </div>
           )
         }
-        const active = item.href === '/' ? pathname === '/' : pathname === item.href
-        if (item.isHome) {
-          return (
-            <Link key={i} href="/" style={{ textDecoration: 'none' }}>
-              <button style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: active ? '8px 8px 8px 8px' : '8px 10px',
-                borderRadius: 7, cursor: 'pointer', fontSize: '.82rem', fontWeight: 500,
-                color: active ? 'var(--teal2)' : 'var(--muted2)',
-                border: active ? '2px solid var(--teal)' : 'none',
-                background: active ? 'var(--teal-dim)' : 'transparent',
-                textAlign: 'left', width: '100%', transition: 'all .12s', marginBottom: 4,
-                borderLeft: active ? '2px solid var(--teal)' : 'none',
-                paddingLeft: active ? 8 : 10,
-              }}>🏠 Home</button>
-            </Link>
-          )
-        }
+
+        const active = item.href === '/'
+          ? pathname === '/'
+          : pathname.startsWith(item.href)
+
+        const classes = ['nav-item', item.home ? 'home' : '', active ? 'active' : '']
+          .filter(Boolean).join(' ')
+
         return (
-          <Link key={i} href={item.href!} style={{ textDecoration: 'none' }}>
-            <button style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px',
-              borderRadius: 7, cursor: 'pointer', transition: 'all .12s',
-              fontSize: '.82rem', fontWeight: 500,
-              color: active ? 'var(--teal2)' : 'var(--muted2)',
-              border: 'none', background: active ? 'var(--teal-dim)' : 'transparent',
-              textAlign: 'left', width: '100%',
-              borderLeft: active ? '2px solid var(--teal)' : 'none',
-              paddingLeft: active ? 8 : 10,
-            }}>
-              <span style={{ fontSize: 13, opacity: .7, flexShrink: 0, width: 16, textAlign: 'center' }}>{item.icon}</span>
-              {item.label}
-            </button>
+          <Link key={i} href={item.href} className={classes}>
+            <span className="nav-icon" aria-hidden="true">
+              {item.home ? <Home size={16} strokeWidth={1.75} /> : <ToolIcon href={item.href} size={16} />}
+            </span>
+            {item.home ? item.label : t(item.tkey!)}
           </Link>
         )
       })}

@@ -1,50 +1,10 @@
-'use client'
-import { useState } from 'react'
+import type { Metadata } from 'next'
+import ToolClient from './ToolClient'
 
-export default function Base64() {
-  const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-
-  const encode = () => {
-    try { setOutput(btoa(unescape(encodeURIComponent(input)))) }
-    catch(e: unknown) { setOutput('Error: ' + (e as Error).message) }
-  }
-  const decode = () => {
-    try { setOutput(decodeURIComponent(escape(atob(input.trim())))) }
-    catch { setOutput('Error: Invalid Base64') }
-  }
-  const copy = () => {
-    navigator.clipboard.writeText(output).then(() => {
-      const t = document.getElementById('__toast') as HTMLElement
-      if (t) { t.textContent = 'Copied!'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1600) }
-    })
-  }
-
-  return (
-    <>
-      <div className="split" style={{ flex: 1 }}>
-        <div className="pane">
-          <div className="pane-hdr">
-            <span className="pane-label">Input</span>
-            <div className="btn-group">
-              <button className="btn primary" onClick={encode}>Encode ↓</button>
-              <button className="btn" onClick={decode}>Decode ↑</button>
-            </div>
-          </div>
-          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste text or Base64…" spellCheck={false} />
-        </div>
-        <div className="pane">
-          <div className="pane-hdr">
-            <span className="pane-label">Output</span>
-            <div className="btn-group"><button className="btn" onClick={copy}>copy</button></div>
-          </div>
-          <textarea value={output} readOnly />
-        </div>
-      </div>
-      <div className="statusbar">
-        <span className="chip chip-ok">BASE64</span>
-        <span>Encode / Decode</span>
-      </div>
-    </>
-  )
+export const metadata: Metadata = {
+  title: 'Base64 Encode Decode — Nilves Dev Tools',
+  description: 'Encode plain text to Base64 or decode Base64 strings back to text instantly in your browser.',
+  keywords: ['base64 encode', 'base64 decode', 'base64 converter', 'base64 tool'],
 }
+
+export default ToolClient

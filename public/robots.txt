@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://devtools.nilves.com
+
+# Sitemaps
+Sitemap: https://devtools.nilves.com/sitemap.xml

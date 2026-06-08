@@ -1,27 +1,61 @@
 'use client'
+import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useTheme } from '@/contexts/ThemeContext'
+import { Sun, Moon } from 'lucide-react'
+
 export default function Header() {
+  const { lang, setLang, t } = useLanguage()
+  const { theme, toggle } = useTheme()
+
   return (
-    <header style={{
-      height: 52, flexShrink: 0, display: 'flex', alignItems: 'center',
-      padding: '0 1.25rem', gap: '1rem',
-      background: 'var(--surface)', borderBottom: '1px solid var(--border)'
-    }}>
-      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <div style={{
-          width: 30, height: 30, borderRadius: 8, background: 'var(--teal)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-        }}>
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="#fff" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 4v16l7-4 7 4V4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/>
+    <header className="site-header">
+      <Link href="/" className="logo">
+        <div className="logo-mark">
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="#fff" aria-hidden="true">
+            <path d="M5 4v16l7-4 7 4V4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" />
           </svg>
         </div>
-        <span style={{ fontFamily: 'var(--display)', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '-.02em' }}>
-          nilves<span style={{ color: 'var(--teal2)' }}>.dev</span>
+        <span className="logo-name">
+          nilves<span>.dev</span>
         </span>
-      </a>
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--mono)', fontSize: '.68rem', color: 'var(--muted)' }}>
-        <div className="pulse" />
-        <span>50+ tools · all free · no signup</span>
+      </Link>
+
+      <div className="hdr-right">
+        <div className="hdr-tagline">
+          <div className="pulse" aria-hidden="true" />
+          <span>{t('header.tagline')}</span>
+        </div>
+
+        {/* Language pill */}
+        <div className="lang-toggle" role="group" aria-label="Language">
+          <button
+            className={`lang-opt${lang === 'tr' ? ' active' : ''}`}
+            onClick={() => setLang('tr')}
+            aria-pressed={lang === 'tr'}
+          >
+            TR
+          </button>
+          <button
+            className={`lang-opt${lang === 'en' ? ' active' : ''}`}
+            onClick={() => setLang('en')}
+            aria-pressed={lang === 'en'}
+          >
+            EN
+          </button>
+        </div>
+
+        {/* Theme toggle */}
+        <button
+          className="theme-toggle"
+          onClick={toggle}
+          title={theme === 'dark' ? t('header.lightTooltip') : t('header.darkTooltip')}
+          aria-label={theme === 'dark' ? t('header.lightTooltip') : t('header.darkTooltip')}
+        >
+          {theme === 'dark'
+            ? <Sun size={16} strokeWidth={1.75} />
+            : <Moon size={16} strokeWidth={1.75} />}
+        </button>
       </div>
     </header>
   )
