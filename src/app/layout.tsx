@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
@@ -69,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(){try{var t=localStorage.getItem('devonekit-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}var l=localStorage.getItem('devonekit-lang');if(l==='tr'||l==='en'){document.documentElement.lang=l;}}catch(e){}})();`,
           }}
         />
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </head>
       <body className="app-shell">
         <Providers>
@@ -79,20 +80,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           <Toast />
         </Providers>
-        {GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA_ID}');`}
-            </Script>
-          </>
-        )}
       </body>
     </html>
   )
