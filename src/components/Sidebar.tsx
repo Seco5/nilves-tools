@@ -19,7 +19,7 @@ type NavItem = {
 type Item = SectionItem | NavItem
 
 const items: Item[] = [
-  { kind: 'link',    label: 'Home',                   href: '/',                      home: true },
+  { kind: 'link',    tkey: 'nav.home',                href: '/',                      home: true },
 
   { kind: 'section', tkey: 'nav.formatters' },
   { kind: 'link',    tkey: 'tools.jsonFormatter',     href: '/json-formatter' },
@@ -102,7 +102,7 @@ export default function Sidebar() {
             <span className="nav-icon" aria-hidden="true">
               {item.home ? <Home size={16} strokeWidth={1.75} /> : <ToolIcon href={item.href} size={16} />}
             </span>
-            {item.home ? item.label : t(item.tkey!)}
+            {t(item.tkey!)}
           </Link>
         )
       })}

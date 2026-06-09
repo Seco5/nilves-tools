@@ -3,6 +3,7 @@ export type Lang = 'tr' | 'en'
 export const translations = {
   tr: {
     nav: {
+      home: 'Anasayfa',
       formatters: 'Formatlayıcılar',
       generators: 'Üreticiler',
       encoders: 'Kodlayıcılar',
@@ -14,7 +15,7 @@ export const translations = {
     },
     tools: {
       jsonFormatter: 'JSON Formatlayıcı',
-      diffChecker: 'Fark Denetleyici',
+      diffChecker: 'Difr Checker',
       xmlFormatter: 'XML Formatlayıcı',
       csvJson: 'CSV ↔ JSON',
       markdownPreview: 'Markdown Önizleme',
@@ -85,6 +86,7 @@ export const translations = {
   },
   en: {
     nav: {
+      home: 'Home',
       formatters: 'Formatters',
       generators: 'Generators',
       encoders: 'Encoders',
