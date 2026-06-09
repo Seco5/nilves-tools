@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
-import { GoogleAnalytics } from '@next/third-parties/google'
+import Script from 'next/script'
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import Toast from '@/components/Toast'
@@ -69,7 +67,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(){try{var t=localStorage.getItem('devonekit-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}var l=localStorage.getItem('devonekit-lang');if(l==='tr'||l==='en'){document.documentElement.lang=l;}}catch(e){}})();`,
           }}
         />
-        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-52MFVGLKDK"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-52MFVGLKDK');
+          `}
+        </Script>
       </head>
       <body className="app-shell">
         <Providers>
