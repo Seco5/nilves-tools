@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useSidebar } from '@/contexts/SidebarContext'
+import Logo from '@/components/Logo'
 import { ToolIcon } from '@/lib/icons'
 import { Home } from 'lucide-react'
 
@@ -79,6 +80,7 @@ export default function Sidebar() {
         aria-hidden="true"
       />
       <nav className={`sidebar${open ? ' open' : ''}`}>
+      <div className="sidebar-logo"><Logo size="sm" showText={true} /></div>
       {items.map((item, i) => {
         if (item.kind === 'section') {
           return (

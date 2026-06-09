@@ -209,9 +209,9 @@ export default function DiffChecker() {
     const blob = new Blob([patch], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.href = url; link.download = 'nilves.diff'; link.click()
+    link.href = url; link.download = 'devonekit.diff'; link.click()
     URL.revokeObjectURL(url)
-    toast('Exported nilves.diff')
+    toast('Exported devonekit.diff')
   }
 
   const exportPdf = async () => {
@@ -225,7 +225,7 @@ export default function DiffChecker() {
     doc.setFont('courier', 'normal')
     doc.setFontSize(14)
     doc.setTextColor(30, 30, 30)
-    doc.text('Diff Report — nilves.dev', margin, y)
+    doc.text('Diff Report — devonekit.com', margin, y)
     y += 10
     doc.setDrawColor(180, 180, 180)
     doc.line(margin, y, pageW - margin, y)
@@ -265,7 +265,7 @@ export default function DiffChecker() {
       y += lineH
     })
 
-    doc.save('nilves-diff.pdf')
+    doc.save('devonekit-diff.pdf')
     toast('PDF exported')
   }
 

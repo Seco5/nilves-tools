@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://devtools.nilves.com
+Host: https://devonekit.com
 
 # Sitemaps
-Sitemap: https://devtools.nilves.com/sitemap.xml
+Sitemap: https://devonekit.com/sitemap.xml

@@ -233,6 +233,9 @@ body {
   padding: 8px 8px 16px;
 }
 
+/* Sidebar logo — shown only inside the mobile drawer (header already has it on desktop) */
+.sidebar-logo { display: none; padding: 6px 10px 12px; }
+
 /* Off-canvas overlay (mobile only) */
 .sidebar-overlay { display: none; }
 .nav-section {
@@ -1365,6 +1368,7 @@ input[type=range] { accent-color: var(--teal); width: 100%; }
 @media (max-width: 880px) {
   /* Show hamburger, turn the sidebar into an off-canvas drawer */
   .nav-burger { display: inline-flex; }
+  .sidebar-logo { display: block; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
 
   .sidebar {
     position: fixed;

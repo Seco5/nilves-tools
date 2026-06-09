@@ -28,13 +28,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>('tr')
 
   useEffect(() => {
-    const saved = localStorage.getItem('nilves-lang') as Lang | null
+    const saved = localStorage.getItem('devonekit-lang') as Lang | null
     if (saved === 'tr' || saved === 'en') setLangState(saved)
   }, [])
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l)
-    localStorage.setItem('nilves-lang', l)
+    localStorage.setItem('devonekit-lang', l)
     document.documentElement.lang = l
   }, [])
 

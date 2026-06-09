@@ -219,7 +219,7 @@ export default function XmlFormatterClient() {
               value={input}
               onChange={(e) => handleInput(e.target.value)}
               onScroll={syncIn}
-              placeholder={'Paste XML here…\n<note><to>Nilves</to><from>Dev</from></note>'}
+              placeholder={'Paste XML here…\n<note><to>DevOneKit</to><from>Dev</from></note>'}
               spellCheck={false}
             />
           </div>

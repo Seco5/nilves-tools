@@ -1,8 +1,8 @@
 'use client'
-import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useSidebar } from '@/contexts/SidebarContext'
+import Logo from '@/components/Logo'
 import { Sun, Moon, Menu } from 'lucide-react'
 
 export default function Header() {
@@ -19,16 +19,7 @@ export default function Header() {
       >
         <Menu size={20} strokeWidth={2} />
       </button>
-      <Link href="/" className="logo">
-        <div className="logo-mark">
-          <svg viewBox="0 0 24 24" width={16} height={16} fill="#fff" aria-hidden="true">
-            <path d="M5 4v16l7-4 7 4V4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" />
-          </svg>
-        </div>
-        <span className="logo-name">
-          nilves<span>.dev</span>
-        </span>
-      </Link>
+      <Logo size="sm" showText={true} />
 
       <div className="hdr-right">
         <div className="hdr-tagline">

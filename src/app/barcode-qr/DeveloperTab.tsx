@@ -21,11 +21,11 @@ function toast(m: string) {
 export default function DeveloperTab() {
   /* QR state */
   const [qrType, setQrType] = useState<QrType>('URL')
-  const [url, setUrl] = useState('https://nilves.dev')
-  const [text, setText] = useState('Hello from Nilves')
-  const [vc, setVc] = useState({ first: 'Ada', last: 'Lovelace', phone: '+905551112233', email: 'ada@nilves.dev', company: 'Nilves', website: 'https://nilves.dev' })
-  const [wifi, setWifi] = useState<{ ssid: string; password: string; security: 'WPA' | 'WEP' | 'None' }>({ ssid: 'NilvesGuest', password: 'supersecret', security: 'WPA' })
-  const [email, setEmail] = useState({ to: 'hi@nilves.dev', subject: 'Hello', body: 'Sent from a QR code' })
+  const [url, setUrl] = useState('https://devonekit.com')
+  const [text, setText] = useState('Hello from DevOneKit')
+  const [vc, setVc] = useState({ first: 'Ada', last: 'Lovelace', phone: '+905551112233', email: 'ada@devonekit.com', company: 'DevOneKit', website: 'https://devonekit.com' })
+  const [wifi, setWifi] = useState<{ ssid: string; password: string; security: 'WPA' | 'WEP' | 'None' }>({ ssid: 'DevOneKitGuest', password: 'supersecret', security: 'WPA' })
+  const [email, setEmail] = useState({ to: 'hi@devonekit.com', subject: 'Hello', body: 'Sent from a QR code' })
   const [sms, setSms] = useState({ phone: '+905551112233', message: 'Hi!' })
   const [qrSize, setQrSize] = useState(256)
   const [qrFg, setQrFg] = useState('#e4e4f0')
@@ -34,7 +34,7 @@ export default function DeveloperTab() {
 
   /* Barcode state */
   const [barFormat, setBarFormat] = useState<BarcodeFormat>('Code128')
-  const [barValue, setBarValue] = useState('NILVES-2026')
+  const [barValue, setBarValue] = useState('DEVONEKIT-2026')
   const [barDisplay, setBarDisplay] = useState(true)
   const [barHeight, setBarHeight] = useState(80)
   const [barWidth, setBarWidth] = useState(2)

@@ -10,13 +10,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
 
   useEffect(() => {
-    const saved = localStorage.getItem('nilves-theme') as Theme | null
+    const saved = localStorage.getItem('devonekit-theme') as Theme | null
     if (saved === 'dark' || saved === 'light') setThemeState(saved)
   }, [])
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t)
-    localStorage.setItem('nilves-theme', t)
+    localStorage.setItem('devonekit-theme', t)
     document.documentElement.setAttribute('data-theme', t)
   }, [])
 

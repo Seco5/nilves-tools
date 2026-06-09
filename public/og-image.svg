@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <clipPath id="logo-clip"><rect x="80" y="70" width="80" height="80" rx="18"/></clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0e0e11"/>
+
+  <!-- Logo icon (80x80) top-left -->
+  <g clip-path="url(#logo-clip)">
+    <rect x="80" y="70" width="80" height="80" fill="#1D9E75"/>
+    <rect x="80" y="115" width="80" height="35" fill="#085041"/>
+  </g>
+  <text x="120" y="100" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" font-weight="400" fill="rgba(255,255,255,0.5)" letter-spacing="4">DEV</text>
+  <text x="120" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="27" font-weight="700" fill="#fff" letter-spacing="-2">1KIT</text>
+  <rect x="107" y="133" width="26" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+
+  <!-- App name + subtitle -->
+  <text x="190" y="108" font-family="JetBrains Mono,monospace" font-size="46" font-weight="700" fill="#ffffff">DevOneKit</text>
+  <text x="192" y="140" font-family="Inter,sans-serif" font-size="22" fill="#60607a">developer toolkit</text>
+
+  <!-- Tagline -->
+  <text x="80" y="225" font-family="Inter,sans-serif" font-size="30" fill="#9a9ab0">50+ tools · 100% browser · zero tracking</text>
+
+  <!-- Divider -->
+  <rect x="80" y="265" width="1040" height="1.5" fill="#26262e"/>
+
+  <!-- Tool names -->
+  <text x="80" y="335" font-family="JetBrains Mono,monospace" font-size="27" fill="#5DCAA5">JSON · Diff · TCKN · UUID · Regex · JWT · Hash · Barcode · SQL · Gantt · <tspan fill="#60607a">+40</tspan></text>
+
+  <!-- Badge pills -->
+  <g font-family="JetBrains Mono,monospace" font-size="20" font-weight="700">
+    <rect x="80" y="420" width="120" height="46" rx="23" fill="none" stroke="#1D9E75" stroke-width="1.5"/>
+    <text x="140" y="450" text-anchor="middle" fill="#5DCAA5">FREE</text>
+
+    <rect x="220" y="420" width="180" height="46" rx="23" fill="none" stroke="#1D9E75" stroke-width="1.5"/>
+    <text x="310" y="450" text-anchor="middle" fill="#5DCAA5">NO SIGNUP</text>
+
+    <rect x="420" y="420" width="210" height="46" rx="23" fill="none" stroke="#1D9E75" stroke-width="1.5"/>
+    <text x="525" y="450" text-anchor="middle" fill="#5DCAA5">OPEN SOURCE</text>
+  </g>
+
+  <!-- Domain bottom-right -->
+  <text x="1120" y="570" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="24" fill="#60607a">devonekit.com</text>
+</svg>

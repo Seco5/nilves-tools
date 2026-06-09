@@ -1,0 +1,87 @@
+'use client'
+import { useId } from 'react'
+import Link from 'next/link'
+import { useTheme } from '@/contexts/ThemeContext'
+
+type Size = 'sm' | 'md' | 'lg' | 'xl'
+
+const SIZES: Record<Size, number> = { sm: 30, md: 40, lg: 64, xl: 96 }
+
+export function LogoIcon({ size = 30 }: { size?: number }) {
+  const id = useId()
+  const clipId = `logo-clip-${id}`
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <defs>
+        <clipPath id={clipId}>
+          <rect width="64" height="64" rx="14" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${clipId})`}>
+        <rect width="64" height="64" rx="14" fill="#1D9E75" />
+        <rect x="0" y="36" width="64" height="28" fill="#085041" />
+        <text
+          x="32" y="24" textAnchor="middle"
+          fontFamily="JetBrains Mono,monospace" fontSize="9" fontWeight="400"
+          fill="rgba(255,255,255,0.5)" letterSpacing="3"
+        >DEV</text>
+        <text
+          x="32" y="44" textAnchor="middle"
+          fontFamily="JetBrains Mono,monospace" fontSize="22" fontWeight="700"
+          fill="#fff" letterSpacing="-2"
+        >1KIT</text>
+        <rect x="22" y="48" width="20" height="1.5" rx="1" fill="rgba(255,255,255,0.4)" />
+      </g>
+    </svg>
+  )
+}
+
+type LogoProps = {
+  size?: Size
+  showText?: boolean
+  theme?: 'dark' | 'light' | 'auto'
+  href?: string | null
+}
+
+export default function Logo({ size = 'sm', showText = true, theme = 'auto', href = '/' }: LogoProps) {
+  const { theme: ctxTheme } = useTheme()
+  const resolved = theme === 'auto' ? ctxTheme : theme
+  const px = SIZES[size]
+
+  const text = showText && (
+    resolved === 'light' ? (
+      <span style={{ color: '#1a1a2e' }}>
+        D<span style={{ color: '#1D9E75' }}>1</span>K
+        <span style={{ color: '#868e96', fontSize: 'smaller' }}>.dev</span>
+      </span>
+    ) : (
+      <span>
+        D<span style={{ color: '#5DCAA5' }}>1</span>K
+        <span style={{ color: '#60607a', fontSize: 'smaller' }}>.dev</span>
+      </span>
+    )
+  )
+
+  const inner = (
+    <>
+      <LogoIcon size={px} />
+      {text}
+    </>
+  )
+
+  const style: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 10,
+    textDecoration: 'none',
+    fontFamily: 'var(--display)',
+    fontSize: size === 'sm' ? '1.05rem' : size === 'md' ? '1.3rem' : size === 'lg' ? '1.8rem' : '2.4rem',
+    fontWeight: 700,
+    letterSpacing: '-.02em',
+  }
+
+  if (href) {
+    return <Link href={href} className="logo" style={style}>{inner}</Link>
+  }
+  return <span className="logo" style={style}>{inner}</span>
+}

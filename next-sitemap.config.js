@@ -29,7 +29,7 @@ const toolRoutes = [
 ]
 
 module.exports = {
-  siteUrl: 'https://devtools.nilves.com',
+  siteUrl: 'https://devonekit.com',
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   changefreq: 'weekly',

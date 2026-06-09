@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="logo-clip"><rect width="64" height="64" rx="14"/></clipPath>
+  </defs>
+  <g clip-path="url(#logo-clip)">
+    <rect width="64" height="64" rx="14" fill="#1D9E75"/>
+    <rect x="0" y="36" width="64" height="28" fill="#085041"/>
+    <text x="32" y="24" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="400" fill="rgba(255,255,255,0.5)" letter-spacing="3">DEV</text>
+    <text x="32" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="22" font-weight="700" fill="#fff" letter-spacing="-2">1KIT</text>
+    <rect x="22" y="48" width="20" height="1.5" rx="1" fill="rgba(255,255,255,0.4)"/>
+  </g>
+</svg>

@@ -42,10 +42,10 @@ export const translations = {
     },
     home: {
       eyebrow: 'Ücretsiz · Tarayıcı tabanlı · Veri saklanmaz',
-      title1: 'Geliştirici hayatın',
-      title2: 'kolaylaştı.',
+      title1: 'DevOneKit',
+      title2: 'Geliştirici hayatın kolaylaştı.',
       description:
-        'Nilves, geliştiriciler, analistler ve test uzmanları için tasarlanmış bir araç setidir. Kodunu rastgele sitelere yapıştırmayı bırak. Sol menüden aracını seç, işini bitir. Her şey tarayıcında çalışır — hiçbir verin saklanmaz.',
+        'DevOneKit, geliştiriciler, analistler ve test uzmanları için tasarlanmış bir araç setidir. Kodunu rastgele sitelere yapıştırmayı bırak. Sol menüden aracını seç, işini bitir. Her şey tarayıcında çalışır — hiçbir verin saklanmaz.',
       stats: {
         toolsNum: '50+',
         tools: 'Araç',
@@ -124,10 +124,10 @@ export const translations = {
     },
     home: {
       eyebrow: 'Free · Browser-based · No data stored',
-      title1: 'Stop googling',
-      title2: 'the same tools twice.',
+      title1: 'DevOneKit',
+      title2: 'Stop googling the same tools twice.',
       description:
-        'Nilves is a toolkit designed for developers, analysts and QA engineers. Stop pasting your code on random websites. Pick a tool from the left sidebar, get it done. Everything runs in your browser — none of your data is ever stored.',
+        'DevOneKit is a toolkit designed for developers, analysts and QA engineers. Stop pasting your code on random websites. Pick a tool from the left sidebar, get it done. Everything runs in your browser — none of your data is ever stored.',
       stats: {
         toolsNum: '50+',
         tools: 'Tools',

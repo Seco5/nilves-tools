@@ -93,7 +93,7 @@ const DEFAULT_W = [30, 40, 220, 60, 96, 78, 78, 44, 40]
 
 /* ─── Multi-project model ────────────────────────────────────── */
 type Project = { id: string; name: string; tasks: Task[]; start: Date; business: boolean }
-const STORAGE_KEY = 'nilves-planner-v1'
+const STORAGE_KEY = 'devonekit-planner-v1'
 const uid = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 
 function makeDefaultProject(): Project {

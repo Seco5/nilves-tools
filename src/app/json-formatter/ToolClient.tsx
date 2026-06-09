@@ -24,7 +24,7 @@ function countKeys(o: unknown, n = 0): number {
 const SAMPLE = JSON.stringify({
   name: 'Ada Lovelace',
   age: 36,
-  email: 'ada@nilves.dev',
+  email: 'ada@devonekit.com',
   active: true,
   roles: ['admin', 'engineer'],
   address: { city: 'London', zip: 'NW1 7TX' },
@@ -110,7 +110,7 @@ export default function JsonFormatter() {
               value={input}
               onChange={e => handleInput(e.target.value)}
               onScroll={syncIn}
-              placeholder={'Paste JSON here…\n{"name":"nilves","version":1}'}
+              placeholder={'Paste JSON here…\n{"name":"devonekit","version":1}'}
               spellCheck={false}
             />
           </div>

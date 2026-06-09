@@ -29,16 +29,24 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Nilves — Developer Toolkit',
-    template: '%s | Nilves',
+    default: 'DevOneKit — Developer Toolkit',
+    template: '%s | DevOneKit',
   },
   description:
-    'Every utility you need as a developer — formatters, generators, encoders, converters — in one fast, private, browser-based toolkit. No ads. No signup. No nonsense.',
+    'Free developer toolkit for developers, analysts and QA engineers. JSON, TCKN, UUID, Regex, SQL and more. Runs in browser, no data stored.',
   keywords: [
-    'developer tools', 'json formatter', 'difr checker', 'uuid generator',
-    'password generator', 'hash generator', 'base64', 'jwt decoder',
-    'regex tester', 'tckn generator', 'vkn generator', 'iban generator',
+    'devonekit', 'developer toolkit', 'json formatter', 'tckn generator',
+    'uuid generator', 'regex tester', 'sql playground', 'free developer tools',
+    'browser tools',
   ],
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+  openGraph: {
+    images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -52,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('nilves-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}var l=localStorage.getItem('nilves-lang');if(l==='tr'||l==='en'){document.documentElement.lang=l;}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('devonekit-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}var l=localStorage.getItem('devonekit-lang');if(l==='tr'||l==='en'){document.documentElement.lang=l;}}catch(e){}})();`,
           }}
         />
       </head>
