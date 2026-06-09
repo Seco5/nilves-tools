@@ -127,7 +127,7 @@ export const translations = {
     home: {
       eyebrow: 'Free · Browser-based · No data stored',
       title1: 'DevOneKit',
-      title2: 'Stop googling the same tools twice.',
+      title2: 'Every tool that makes your life easier, in one place.',
       description:
         'DevOneKit is a toolkit designed for developers, analysts and QA engineers. Stop pasting your code on random websites. Pick a tool from the left sidebar, get it done. Everything runs in your browser — none of your data is ever stored.',
       stats: {
