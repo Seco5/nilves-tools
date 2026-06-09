@@ -21,16 +21,20 @@ export function LogoIcon({ size = 30 }: { size?: number }) {
         <rect width="64" height="64" rx="14" fill="#1D9E75" />
         <rect x="0" y="36" width="64" height="28" fill="#085041" />
         <text
-          x="32" y="24" textAnchor="middle"
-          fontFamily="JetBrains Mono,monospace" fontSize="9" fontWeight="400"
-          fill="rgba(255,255,255,0.5)" letterSpacing="3"
-        >DEV</text>
+          x="32" y="25" textAnchor="middle"
+          fontFamily="JetBrains Mono,monospace" fontSize="11" fontWeight="400"
+          fill="rgba(255,255,255,0.55)" letterSpacing="2"
+        >dev</text>
         <text
           x="32" y="44" textAnchor="middle"
-          fontFamily="JetBrains Mono,monospace" fontSize="22" fontWeight="700"
-          fill="#fff" letterSpacing="-2"
-        >1KIT</text>
-        <rect x="22" y="48" width="20" height="1.5" rx="1" fill="rgba(255,255,255,0.4)" />
+          fontFamily="JetBrains Mono,monospace" fontSize="20" fontWeight="700"
+          fill="#fff" letterSpacing="-1"
+        >one</text>
+        <text
+          x="32" y="57" textAnchor="middle"
+          fontFamily="JetBrains Mono,monospace" fontSize="10" fontWeight="400"
+          fill="#9FE1CB" letterSpacing="2"
+        >kit</text>
       </g>
     </svg>
   )
@@ -50,14 +54,12 @@ export default function Logo({ size = 'sm', showText = true, theme = 'auto', hre
 
   const text = showText && (
     resolved === 'light' ? (
-      <span style={{ color: '#1a1a2e' }}>
-        D<span style={{ color: '#1D9E75' }}>1</span>K
-        <span style={{ color: '#868e96', fontSize: 'smaller' }}>.dev</span>
+      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 16, fontWeight: 700, color: '#1a1a2e', letterSpacing: '-.03em' }}>
+        Dev<span style={{ color: '#1D9E75' }}>One</span>Kit
       </span>
     ) : (
-      <span>
-        D<span style={{ color: '#5DCAA5' }}>1</span>K
-        <span style={{ color: '#60607a', fontSize: 'smaller' }}>.dev</span>
+      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 16, fontWeight: 700, color: '#e4e4f0', letterSpacing: '-.03em' }}>
+        Dev<span style={{ color: '#5DCAA5' }}>One</span>Kit
       </span>
     )
   )

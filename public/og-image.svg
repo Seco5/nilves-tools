@@ -6,14 +6,14 @@
   <!-- Background -->
   <rect width="1200" height="630" fill="#0e0e11"/>
 
-  <!-- Logo icon (80x80) top-left -->
+  <!-- Logo icon (80x80) top-left — three-line dev/one/kit -->
   <g clip-path="url(#logo-clip)">
     <rect x="80" y="70" width="80" height="80" fill="#1D9E75"/>
     <rect x="80" y="115" width="80" height="35" fill="#085041"/>
   </g>
-  <text x="120" y="100" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" font-weight="400" fill="rgba(255,255,255,0.5)" letter-spacing="4">DEV</text>
-  <text x="120" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="27" font-weight="700" fill="#fff" letter-spacing="-2">1KIT</text>
-  <rect x="107" y="133" width="26" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+  <text x="120" y="101" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" font-weight="400" fill="rgba(255,255,255,0.55)" letter-spacing="3">dev</text>
+  <text x="120" y="125" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="25" font-weight="700" fill="#fff" letter-spacing="-1">one</text>
+  <text x="120" y="142" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" font-weight="400" fill="#9FE1CB" letter-spacing="3">kit</text>
 
   <!-- App name + subtitle -->
   <text x="190" y="108" font-family="JetBrains Mono,monospace" font-size="46" font-weight="700" fill="#ffffff">DevOneKit</text>
