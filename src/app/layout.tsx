@@ -48,9 +48,6 @@ export const metadata: Metadata = {
   openGraph: {
     images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
   },
-  verification: {
-    google: '274bad7b262cd5e8',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -62,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
+        <meta name="google-site-verification" content="274bad7b262cd5e8" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('devonekit-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}var l=localStorage.getItem('devonekit-lang');if(l==='tr'||l==='en'){document.documentElement.lang=l;}}catch(e){}})();`,
@@ -69,9 +67,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-52MFVGLKDK"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
