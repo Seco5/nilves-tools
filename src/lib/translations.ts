@@ -44,7 +44,7 @@ export const translations = {
     home: {
       eyebrow: 'Ücretsiz · Tarayıcı tabanlı · Veri saklanmaz',
       title1: 'DevOneKit',
-      title2: 'Geliştirici hayatın kolaylaştı.',
+      title2: 'Hayatını kolaylaştıran toollar tek yerde.',
       description:
         'DevOneKit, geliştiriciler, analistler ve test uzmanları için tasarlanmış bir araç setidir. Kodunu rastgele sitelere yapıştırmayı bırak. Sol menüden aracını seç, işini bitir. Her şey tarayıcında çalışır — hiçbir verin saklanmaz.',
       stats: {
