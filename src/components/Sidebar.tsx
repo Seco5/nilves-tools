@@ -1,12 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useSidebar } from '@/contexts/SidebarContext'
 import Logo from '@/components/Logo'
 import { ToolIcon } from '@/lib/icons'
-import { Home } from 'lucide-react'
+import { Home, Search } from 'lucide-react'
 
 type SectionItem = { kind: 'section'; tkey: string; flag?: string }
 type NavItem = {
@@ -66,11 +66,40 @@ const items: Item[] = [
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { open, close } = useSidebar()
+  const [query, setQuery] = useState('')
 
   // Close the drawer whenever the route changes (mobile)
   useEffect(() => { close() }, [pathname, close])
+
+  const norm = (s: string) => s.toLocaleLowerCase(lang === 'tr' ? 'tr' : 'en')
+  const q = norm(query.trim())
+
+  const renderLink = (item: NavItem, key: React.Key) => {
+    const active = item.href === '/'
+      ? pathname === '/'
+      : pathname.startsWith(item.href)
+    const classes = ['nav-item', item.home ? 'home' : '', active ? 'active' : '']
+      .filter(Boolean).join(' ')
+    return (
+      <Link key={key} href={item.href} className={classes}>
+        <span className="nav-icon" aria-hidden="true">
+          {item.home ? <Home size={16} strokeWidth={1.75} /> : <ToolIcon href={item.href} size={16} />}
+        </span>
+        {t(item.tkey!)}
+      </Link>
+    )
+  }
+
+  // When searching, show a flat list of matching tools (ignore sections & Home)
+  const results = q
+    ? items.filter(
+        (it): it is NavItem =>
+          it.kind === 'link' && !it.home &&
+          (norm(t(it.tkey!)).includes(q) || norm(it.href).includes(q)),
+      )
+    : null
 
   return (
     <>
@@ -80,32 +109,33 @@ export default function Sidebar() {
         aria-hidden="true"
       />
       <nav className={`sidebar${open ? ' open' : ''}`}>
-      <div className="sidebar-logo"><Logo size="sm" showText={true} /></div>
-      {items.map((item, i) => {
-        if (item.kind === 'section') {
-          return (
-            <div key={i} className="nav-section">
-              {item.flag ? `${item.flag} ` : ''}{t(item.tkey)}
-            </div>
-          )
-        }
+        <div className="sidebar-logo"><Logo size="sm" showText={true} /></div>
 
-        const active = item.href === '/'
-          ? pathname === '/'
-          : pathname.startsWith(item.href)
+        <div className="sidebar-search">
+          <Search size={15} strokeWidth={1.75} className="sidebar-search-ic" aria-hidden="true" />
+          <input
+            type="search"
+            className="sidebar-search-input"
+            placeholder={t('nav.search')}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            aria-label={t('nav.search')}
+          />
+        </div>
 
-        const classes = ['nav-item', item.home ? 'home' : '', active ? 'active' : '']
-          .filter(Boolean).join(' ')
-
-        return (
-          <Link key={i} href={item.href} className={classes}>
-            <span className="nav-icon" aria-hidden="true">
-              {item.home ? <Home size={16} strokeWidth={1.75} /> : <ToolIcon href={item.href} size={16} />}
-            </span>
-            {t(item.tkey!)}
-          </Link>
-        )
-      })}
+        {results
+          ? (results.length
+              ? results.map((it, i) => renderLink(it, i))
+              : <div className="sidebar-noresults">{t('nav.noResults')}</div>)
+          : items.map((item, i) =>
+              item.kind === 'section'
+                ? (
+                  <div key={i} className="nav-section">
+                    {item.flag ? `${item.flag} ` : ''}{t(item.tkey)}
+                  </div>
+                )
+                : renderLink(item, i),
+            )}
       </nav>
     </>
   )

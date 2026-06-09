@@ -4,6 +4,8 @@ export const translations = {
   tr: {
     nav: {
       home: 'Anasayfa',
+      search: 'Araçlarda ara…',
+      noResults: 'Araç bulunamadı',
       formatters: 'Formatlayıcılar',
       generators: 'Üreticiler',
       encoders: 'Kodlayıcılar',
@@ -87,6 +89,8 @@ export const translations = {
   en: {
     nav: {
       home: 'Home',
+      search: 'Search tools…',
+      noResults: 'No tools found',
       formatters: 'Formatters',
       generators: 'Generators',
       encoders: 'Encoders',
