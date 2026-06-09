@@ -50,6 +50,9 @@ export const metadata: Metadata = {
   openGraph: {
     images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
   },
+  verification: {
+    google: '274bad7b262cd5e8',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
