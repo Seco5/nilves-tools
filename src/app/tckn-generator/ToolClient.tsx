@@ -70,7 +70,7 @@ const T = {
     relatedTitle: 'İlgili Araçlar',
     related: [
       { label: 'VKN Üretici', href: '/vkn-generator' },
-      { label: 'IBAN Üretici', href: '/tr-iban-generator' },
+      { label: 'IBAN Üretici', href: '/iban-generator' },
       { label: 'Kredi Kartı No', href: '/credit-card-generator' },
       { label: 'Sahte Kişi Verisi', href: '/fake-person-data' },
     ],
@@ -114,7 +114,7 @@ const T = {
     relatedTitle: 'Related Tools',
     related: [
       { label: 'VKN Generator', href: '/vkn-generator' },
-      { label: 'IBAN Generator', href: '/tr-iban-generator' },
+      { label: 'IBAN Generator', href: '/iban-generator' },
       { label: 'Credit Card No', href: '/credit-card-generator' },
       { label: 'Fake Person Data', href: '/fake-person-data' },
     ],

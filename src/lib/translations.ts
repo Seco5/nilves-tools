@@ -120,7 +120,7 @@ export const translations = {
       regexTester: 'Regex Tester',
       tcknGenerator: 'TCKN Generator',
       vknGenerator: 'VKN Generator',
-      ibanGenerator: 'TR IBAN Generator',
+      ibanGenerator: 'IBAN Generator',
       creditCard: 'Credit Card No',
       fakeData: 'Fake Person Data',
       sqlPlayground: 'SQL Playground',

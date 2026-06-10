@@ -53,7 +53,7 @@ const items: Item[] = [
   { kind: 'section', tkey: 'nav.turkish', flag: '🇹🇷' },
   { kind: 'link',    tkey: 'tools.tcknGenerator',     href: '/tckn-generator' },
   { kind: 'link',    tkey: 'tools.vknGenerator',      href: '/vkn-generator' },
-  { kind: 'link',    tkey: 'tools.ibanGenerator',     href: '/tr-iban-generator' },
+  { kind: 'link',    tkey: 'tools.ibanGenerator',     href: '/iban-generator' },
   { kind: 'link',    tkey: 'tools.creditCard',        href: '/credit-card-generator' },
   { kind: 'link',    tkey: 'tools.fakeData',          href: '/fake-person-data' },
 

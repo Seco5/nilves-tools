@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      { source: '/tr-iban-generator', destination: '/iban-generator', permanent: true },
+    ]
+  },
 };
 
 export default nextConfig;

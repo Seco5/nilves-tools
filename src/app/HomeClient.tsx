@@ -56,7 +56,7 @@ const CATEGORIES: Category[] = [
     tools: [
       { tkey: 'tools.tcknGenerator', desc: 'Valid Turkish national ID numbers',     href: '/tckn-generator',        badge: 'TR' },
       { tkey: 'tools.vknGenerator',  desc: 'Turkish tax identification numbers',    href: '/vkn-generator',         badge: 'TR' },
-      { tkey: 'tools.ibanGenerator', desc: 'Valid Turkish IBAN numbers',            href: '/tr-iban-generator',     badge: 'TR' },
+      { tkey: 'tools.ibanGenerator', desc: 'Generate & validate IBANs, 20+ countries', href: '/iban-generator',     badge: 'TR' },
       { tkey: 'tools.creditCard',    desc: 'Visa, MC, Amex, Troy — Luhn valid',     href: '/credit-card-generator', badge: 'TR' },
       { tkey: 'tools.fakeData',      desc: 'Turkish fake identity for testing',     href: '/fake-person-data',      badge: 'TR' },
     ],

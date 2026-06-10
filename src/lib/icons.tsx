@@ -34,7 +34,7 @@ export const TOOL_ICONS: Record<string, LucideIcon> = {
 
   '/tckn-generator':        IdCard,
   '/vkn-generator':         Building2,
-  '/tr-iban-generator':     Landmark,
+  '/iban-generator':     Landmark,
   '/credit-card-generator': CreditCard,
   '/fake-person-data':      UserRound,
 
