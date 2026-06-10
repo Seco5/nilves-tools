@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Copy, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { Copy, RefreshCw, CheckCircle2, FlaskConical, ShieldCheck, Scale } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 // ── Algoritma ─────────────────────────────────────────────────────────────────
@@ -42,11 +42,11 @@ const T = {
     copy: 'Kopyala',
     copyAll: 'Tümünü Kopyala',
     copied: 'Kopyalandı',
-    legalTitle: 'Yasal Uyarı',
-    legal: [
-      'Üretilen numaralar yalnızca yazılım testi ve eğitim amaçlıdır, resmi işlemlerde kullanılamaz.',
-      'Algoritmaya uygun olsa da gerçek bir T.C. vatandaşına ait değildir.',
-      'Kötüye kullanımdan doğan yasal sorumluluk kullanıcıya aittir.',
+    rulesTitle: 'Kullanım Kuralları',
+    cards: [
+      { title: 'Yalnızca Test Amaçlı', text: 'Yazılım geliştirme ve test süreçleri için tasarlanmıştır.' },
+      { title: 'Gerçek Kişi Yok', text: 'Hiçbir zaman gerçek bir T.C. vatandaşına ait değildir.' },
+      { title: 'Yasal Sorumluluk', text: 'Kötüye kullanımdan doğan sorumluluk kullanıcıya aittir.' },
     ],
     algoTitle: 'Algoritma Nasıl Çalışır?',
     algoText:
@@ -86,11 +86,11 @@ const T = {
     copy: 'Copy',
     copyAll: 'Copy All',
     copied: 'Copied',
-    legalTitle: 'Legal Notice',
-    legal: [
-      'Generated numbers are for software testing and educational use only; they cannot be used in official procedures.',
-      'Although algorithm-valid, they never belong to a real Turkish citizen.',
-      'Any legal liability arising from misuse rests with the user.',
+    rulesTitle: 'Usage Rules',
+    cards: [
+      { title: 'For Testing Only', text: 'Designed for software development and testing processes.' },
+      { title: 'No Real Person', text: 'Never belongs to a real Turkish citizen.' },
+      { title: 'Legal Responsibility', text: 'Any liability arising from misuse rests with the user.' },
     ],
     algoTitle: 'How Does the Algorithm Work?',
     algoText:
@@ -120,6 +120,17 @@ const T = {
     ],
   },
 } as const
+
+// ── Info Card ─────────────────────────────────────────────────────────────────
+function InfoCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+  return (
+    <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <div className="text-[var(--teal)]">{icon}</div>
+      <p className="text-base font-semibold text-[var(--text)]">{title}</p>
+      <p className="text-sm leading-7 text-[var(--muted2)]">{text}</p>
+    </div>
+  )
+}
 
 // ── FAQ Item ──────────────────────────────────────────────────────────────────
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -262,22 +273,19 @@ export default function TCKNToolClient() {
         </div>
       </section>
 
-      {/* Yasal Uyarı */}
-      <section className="space-y-4 rounded-2xl border border-[var(--yellow)]/20 bg-[var(--yellow)]/[0.05] px-6 py-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--yellow)]">{t.legalTitle}</p>
-        <ul className="space-y-3 text-sm leading-7 text-[var(--muted2)]">
-          {t.legal.map((line, i) => (
-            <li key={i} className="flex gap-2.5">
-              <span className="shrink-0 text-[var(--yellow)]">—</span>
-              {line}
-            </li>
-          ))}
-        </ul>
+      {/* Kullanım Kuralları */}
+      <section className="space-y-4">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">{t.rulesTitle}</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <InfoCard icon={<FlaskConical size={20} />} title={t.cards[0].title} text={t.cards[0].text} />
+          <InfoCard icon={<ShieldCheck size={20} />} title={t.cards[1].title} text={t.cards[1].text} />
+          <InfoCard icon={<Scale size={20} />} title={t.cards[2].title} text={t.cards[2].text} />
+        </div>
       </section>
       </div>
 
       {/* Algoritma */}
-      <section className="space-y-4">
+      <section className="space-y-4 pt-8">
         <div className="space-y-2">
           <h2 className="text-xl font-bold text-[var(--text)]">{t.algoTitle}</h2>
           <p className="text-sm leading-7 text-[var(--muted2)]">{t.algoText}</p>
@@ -307,7 +315,7 @@ export default function TCKNToolClient() {
       </section>
 
       {/* SSS */}
-      <section className="space-y-4">
+      <section className="space-y-4 pt-8">
         <h2 className="text-xl font-bold text-[var(--text)]">{t.faqTitle}</h2>
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6">
           {t.faq.map((item) => (
