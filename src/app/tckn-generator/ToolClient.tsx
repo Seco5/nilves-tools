@@ -128,12 +128,12 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     <div className="border-b border-[var(--border)] last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-4 text-left text-sm text-[var(--text)] transition-colors hover:text-[var(--teal)]"
+        className="flex w-full items-center justify-between py-5 text-left text-[15px] text-[var(--text)] transition-colors hover:text-[var(--teal)]"
       >
         <span>{q}</span>
-        <span className="ml-6 shrink-0 text-[var(--teal)]">{open ? '−' : '+'}</span>
+        <span className="ml-6 shrink-0 text-lg text-[var(--teal)]">{open ? '−' : '+'}</span>
       </button>
-      {open && <p className="pb-5 text-sm leading-relaxed text-[var(--muted2)]">{a}</p>}
+      {open && <p className="pb-5 text-sm leading-7 text-[var(--muted2)]">{a}</p>}
     </div>
   )
 }
@@ -153,7 +153,7 @@ export default function TCKNToolClient() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl space-y-16 px-4 py-16">
+    <main className="mx-auto max-w-3xl space-y-14 px-6 py-14">
       {/* Hero */}
       <section className="space-y-3 text-center">
         <span className="inline-block rounded-full bg-[var(--teal-dim)] px-3 py-1 text-xs font-medium uppercase tracking-widest text-[var(--teal)]">
@@ -216,9 +216,9 @@ export default function TCKNToolClient() {
           </div>
           <button
             onClick={generate}
-            className="flex items-center gap-2 rounded-xl bg-[var(--teal)] px-6 py-2 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+            className="flex items-center gap-2.5 rounded-xl bg-[var(--teal)] px-9 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95"
           >
-            <RefreshCw size={13} />
+            <RefreshCw size={17} />
             {t.generate}
           </button>
           {!single && (
@@ -245,9 +245,9 @@ export default function TCKNToolClient() {
       {/* Yasal Uyarı */}
       <section className="space-y-3 rounded-2xl border border-[var(--yellow)]/25 bg-[var(--yellow)]/10 px-6 py-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--yellow)]">{t.legalTitle}</p>
-        <ul className="space-y-2 text-sm leading-relaxed text-[var(--muted2)]">
+        <ul className="space-y-3 text-sm leading-7 text-[var(--muted2)]">
           {t.legal.map((line, i) => (
-            <li key={i} className="flex gap-2">
+            <li key={i} className="flex gap-2.5">
               <span className="shrink-0 text-[var(--yellow)]">—</span>
               {line}
             </li>
@@ -276,8 +276,8 @@ export default function TCKNToolClient() {
             <tbody>
               {t.rows.map(([digit, rule], i) => (
                 <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                  <td className="px-5 py-3.5 font-mono text-xs text-[var(--teal)]">{digit}</td>
-                  <td className="px-5 py-3.5 text-[var(--muted2)]">{rule}</td>
+                  <td className="px-5 py-4 font-mono text-xs text-[var(--teal)]">{digit}</td>
+                  <td className="px-5 py-4 leading-6 text-[var(--muted2)]">{rule}</td>
                 </tr>
               ))}
             </tbody>

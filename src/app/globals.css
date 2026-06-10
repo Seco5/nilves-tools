@@ -233,6 +233,21 @@ body {
   padding: 8px 8px 16px;
 }
 
+/* Soft, theme-aware scrollbars (replaces the default white track) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
+
 /* Sidebar logo — shown only inside the mobile drawer (header already has it on desktop) */
 .sidebar-logo { display: none; padding: 6px 10px 12px; }
 
