@@ -128,12 +128,12 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     <div className="border-b border-[var(--border)] last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-5 text-left text-[15px] text-[var(--text)] transition-colors hover:text-[var(--teal)]"
+        className="flex w-full items-center justify-between py-4 text-left text-[15px] text-[var(--text)] transition-colors hover:text-[var(--teal)]"
       >
         <span>{q}</span>
         <span className="ml-6 shrink-0 text-lg text-[var(--teal)]">{open ? '−' : '+'}</span>
       </button>
-      {open && <p className="pb-5 text-sm leading-7 text-[var(--muted2)]">{a}</p>}
+      {open && <p className="pb-4 text-sm leading-7 text-[var(--muted2)]">{a}</p>}
     </div>
   )
 }
@@ -155,7 +155,7 @@ export default function TCKNToolClient() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-14 px-6 py-14">
+    <main className="mx-auto max-w-3xl space-y-20 px-6 py-16 md:px-10">
       {/* Hero */}
       <section className="space-y-3 text-center">
         <span className="inline-block rounded-full bg-[var(--teal-dim)] px-3 py-1 text-xs font-medium uppercase tracking-widest text-[var(--teal)]">
@@ -165,7 +165,8 @@ export default function TCKNToolClient() {
         <p className="mx-auto max-w-sm text-sm leading-relaxed text-[var(--muted2)]">{t.subtitle}</p>
       </section>
 
-      {/* Ana Kart */}
+      {/* Üretici + Yasal uyarı — bağlamsal grup (24px iç boşluk) */}
+      <div className="space-y-6">
       <section className="space-y-4">
         {single && (
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-10 text-center">
@@ -199,7 +200,7 @@ export default function TCKNToolClient() {
         )}
 
         {!single && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {list.map((tc, i) => (
               <div
                 key={i}
@@ -221,7 +222,7 @@ export default function TCKNToolClient() {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <div className="flex items-center gap-2">
             <span className="text-xs text-[var(--muted2)]">{t.countLabel}</span>
             <input
@@ -262,7 +263,7 @@ export default function TCKNToolClient() {
       </section>
 
       {/* Yasal Uyarı */}
-      <section className="space-y-3 rounded-2xl border border-[var(--yellow)]/20 bg-[var(--yellow)]/[0.05] px-6 py-5">
+      <section className="space-y-4 rounded-2xl border border-[var(--yellow)]/20 bg-[var(--yellow)]/[0.05] px-6 py-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--yellow)]">{t.legalTitle}</p>
         <ul className="space-y-3 text-sm leading-7 text-[var(--muted2)]">
           {t.legal.map((line, i) => (
@@ -273,12 +274,13 @@ export default function TCKNToolClient() {
           ))}
         </ul>
       </section>
+      </div>
 
       {/* Algoritma */}
-      <section className="space-y-5">
-        <div className="space-y-1">
+      <section className="space-y-4">
+        <div className="space-y-2">
           <h2 className="text-xl font-bold text-[var(--text)]">{t.algoTitle}</h2>
-          <p className="text-sm leading-relaxed text-[var(--muted2)]">{t.algoText}</p>
+          <p className="text-sm leading-7 text-[var(--muted2)]">{t.algoText}</p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-[var(--border)]">
           <table className="w-full text-sm">
