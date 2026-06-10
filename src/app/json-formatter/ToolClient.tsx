@@ -261,6 +261,7 @@ export default function JsonFormatter() {
 
   return (
     <>
+      <div style={{ height: 'calc(100vh - var(--header-h))', flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="split" style={{ flex: 1 }}>
         <div className="pane">
           <div className="pane-hdr">
@@ -305,6 +306,7 @@ export default function JsonFormatter() {
         <span className={`chip chip-${chip}`}>{chipTxt}</span>
         <span>{msg}</span>
         <span style={{ marginLeft: 'auto' }}>{stats}</span>
+      </div>
       </div>
       <SeoContent en={en} />
     </>
