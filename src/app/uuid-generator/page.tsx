@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import ToolClient from './ToolClient'
 
 export const metadata: Metadata = {
-  title: 'UUID & NanoID Generator — DevOneKit',
-  description: 'Generate cryptographically random UUID v4, NIL UUIDs, Short IDs and NanoIDs. Bulk generate up to 50 at once.',
-  keywords: ['uuid generator', 'nanoid', 'unique id', 'uuid v4', 'random id'],
+  title: 'UUID & NanoID Üretici — Ücretsiz Online Araç | DevOneKit',
+  description: 'UUID v4, NanoID ve Short ID üretin. Kriptografik olarak güvenli, tarayıcıda çalışır, veri saklanmaz. Geliştiriciler için ücretsiz UUID üretici.',
+  keywords: ['uuid üretici', 'uuid generator', 'nanoid generator', 'uuid v4', 'unique id generator', 'guid generator', 'online uuid', 'random id generator'],
 }
 
 export default ToolClient
