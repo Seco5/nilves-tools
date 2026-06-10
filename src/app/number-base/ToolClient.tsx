@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTT } from '@/lib/toolText'
 
 export default function NumberBase() {
+  const { en } = useTT()
+  const Lb = en
+    ? { dec: 'Decimal', bin: 'Binary', oct: 'Octal', hex: 'Hexadecimal' }
+    : { dec: 'Onluk (Decimal)', bin: 'İkilik (Binary)', oct: 'Sekizlik (Octal)', hex: 'Onaltılık (Hex)' }
   const [dec, setDec] = useState('')
   const [bin, setBin] = useState('')
   const [oct, setOct] = useState('')
@@ -28,10 +33,10 @@ export default function NumberBase() {
       <div className="tool-wrap">
         <div className="tool-section">
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
-            <div><label className="tool-label">Decimal</label><input className="tool-input" placeholder="255" value={dec} onChange={e => { setDec(e.target.value); convert('dec',e.target.value) }} /></div>
-            <div><label className="tool-label">Binary</label><input className="tool-input" placeholder="11111111" value={bin} onChange={e => { setBin(e.target.value); convert('bin',e.target.value) }} /></div>
-            <div><label className="tool-label">Octal</label><input className="tool-input" placeholder="377" value={oct} onChange={e => { setOct(e.target.value); convert('oct',e.target.value) }} /></div>
-            <div><label className="tool-label">Hexadecimal</label><input className="tool-input" placeholder="FF" value={hex} onChange={e => { setHex(e.target.value); convert('hex',e.target.value) }} /></div>
+            <div><label className="tool-label">{Lb.dec}</label><input className="tool-input" placeholder="255" value={dec} onChange={e => { setDec(e.target.value); convert('dec',e.target.value) }} /></div>
+            <div><label className="tool-label">{Lb.bin}</label><input className="tool-input" placeholder="11111111" value={bin} onChange={e => { setBin(e.target.value); convert('bin',e.target.value) }} /></div>
+            <div><label className="tool-label">{Lb.oct}</label><input className="tool-input" placeholder="377" value={oct} onChange={e => { setOct(e.target.value); convert('oct',e.target.value) }} /></div>
+            <div><label className="tool-label">{Lb.hex}</label><input className="tool-input" placeholder="FF" value={hex} onChange={e => { setHex(e.target.value); convert('hex',e.target.value) }} /></div>
           </div>
         </div>
       </div>

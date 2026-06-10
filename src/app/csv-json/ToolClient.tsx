@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function syntaxHL(s: string) {
@@ -14,10 +15,11 @@ function syntaxHL(s: string) {
 }
 
 export default function CsvJson() {
+  const { tt, en } = useTT()
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [chip, setChip] = useState<'idle'|'ok'|'err'>('idle')
-  const [msg, setMsg] = useState('Choose a conversion direction')
+  const [msg, setMsg] = useState<string>(en ? 'Choose a conversion direction' : 'Bir dönüştürme yönü seçin')
 
   const copyOut = () => {
     const el = document.getElementById('csv-out')
@@ -29,7 +31,7 @@ export default function CsvJson() {
 
   const csvToJson = () => {
     const raw = input.trim()
-    if (!raw) { setMsg('Paste CSV first'); return }
+    if (!raw) { setMsg(en ? 'Paste CSV first' : 'Önce CSV yapıştırın'); return }
     try {
       const lines = raw.split('\n').filter(l => l.trim())
       const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''))
@@ -41,18 +43,18 @@ export default function CsvJson() {
       })
       const out = JSON.stringify(rows, null, 2)
       setOutput('<pre style="font-family:inherit;font-size:inherit;line-height:inherit;background:none;border:none;padding:0;margin:0">' + syntaxHL(esc(out)) + '</pre>')
-      setChip('ok'); setMsg(rows.length + ' rows converted')
+      setChip('ok'); setMsg(rows.length + (en ? ' rows converted' : ' satır dönüştürüldü'))
     } catch(e: unknown) { setChip('err'); setMsg((e as Error).message) }
   }
 
   const jsonToCsv = () => {
     try {
       const data = JSON.parse(input)
-      if (!Array.isArray(data)) { setMsg('Input must be a JSON array'); return }
+      if (!Array.isArray(data)) { setMsg(en ? 'Input must be a JSON array' : 'Girdi bir JSON dizisi olmalı'); return }
       const headers = Object.keys(data[0])
       const csv = [headers.join(','), ...data.map((r: Record<string,unknown>) => headers.map(h => `"${String(r[h]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
       setOutput('<span style="white-space:pre;display:block">' + esc(csv) + '</span>')
-      setChip('ok'); setMsg(data.length + ' rows converted')
+      setChip('ok'); setMsg(data.length + (en ? ' rows converted' : ' satır dönüştürüldü'))
     } catch(e: unknown) { setChip('err'); setMsg((e as Error).message) }
   }
 
@@ -61,24 +63,24 @@ export default function CsvJson() {
       <div className="split" style={{ flex: 1 }}>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Input</span>
+            <span className="pane-label">{tt.input}</span>
             <div className="btn-group">
               <button className="btn primary" onClick={csvToJson}>CSV → JSON</button>
               <button className="btn" onClick={jsonToCsv}>JSON → CSV</button>
             </div>
           </div>
-          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste CSV or JSON here…" spellCheck={false} />
+          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={en ? 'Paste CSV or JSON here…' : 'CSV veya JSON yapıştırın…'} spellCheck={false} />
         </div>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Output</span>
-            <div className="btn-group"><button className="btn" onClick={copyOut}>copy</button></div>
+            <span className="pane-label">{tt.output}</span>
+            <div className="btn-group"><button className="btn" onClick={copyOut}>{tt.copy}</button></div>
           </div>
           <div className="output-box" id="csv-out" dangerouslySetInnerHTML={{ __html: output }} />
         </div>
       </div>
       <div className="statusbar">
-        <span className={`chip chip-${chip}`}>{chip === 'idle' ? 'IDLE' : chip === 'ok' ? 'OK' : 'ERROR'}</span>
+        <span className={`chip chip-${chip}`}>{chip === 'idle' ? (en?'IDLE':'BEKLEMEDE') : chip === 'ok' ? (en?'OK':'TAMAM') : (en?'ERROR':'HATA')}</span>
         <span>{msg}</span>
       </div>
     </>

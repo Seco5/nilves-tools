@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b-a+1)) + a }
 const WORDS = ['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do','eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim','ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi','aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit','voluptate','velit','esse','cillum','eu','fugiat','nulla','pariatur','excepteur','sint','occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt','mollit','anim','id','est','laborum']
@@ -8,6 +9,7 @@ function loremSent() { return loremWords(ri(8,18)) + '.' }
 function loremPara() { return Array.from({length:ri(4,7)}, loremSent).join(' ') }
 
 export default function LoremIpsum() {
+  const { tt, en } = useTT()
   const [type, setType] = useState('paragraphs')
   const [count, setCount] = useState(3)
   const [out, setOut] = useState('')
@@ -32,16 +34,16 @@ export default function LoremIpsum() {
       <div className="tool-wrap">
         <div className="tool-section">
           <div style={{ display:'flex', gap:10, flexWrap:'wrap', alignItems:'center', marginBottom:'1rem' }}>
-            <label className="gen-label">Type:</label>
+            <label className="gen-label">{tt.type}:</label>
             <select className="gen-sel" value={type} onChange={e => { setType(e.target.value); gen(e.target.value, count) }}>
-              <option value="paragraphs">Paragraphs</option>
-              <option value="sentences">Sentences</option>
-              <option value="words">Words</option>
+              <option value="paragraphs">{tt.paragraphs}</option>
+              <option value="sentences">{tt.sentences}</option>
+              <option value="words">{tt.words}</option>
             </select>
-            <label className="gen-label">Count:</label>
+            <label className="gen-label">{tt.count}:</label>
             <input type="number" className="gen-num" value={count} min={1} max={20} onChange={e => setCount(Number(e.target.value))} />
-            <button className="btn primary" onClick={() => gen()}>Generate</button>
-            <button className="btn" onClick={copy}>Copy</button>
+            <button className="btn primary" onClick={() => gen()}>{tt.generate}</button>
+            <button className="btn" onClick={copy}>{tt.copy}</button>
           </div>
           <div className="result-box" style={{ minHeight:120, lineHeight:1.8, fontFamily:'var(--sans)', fontSize:'.84rem', cursor:'default', whiteSpace:'pre-wrap' }}>
             {out}
@@ -50,7 +52,7 @@ export default function LoremIpsum() {
       </div>
       <div className="statusbar">
         <span className="chip chip-ok">LOREM</span>
-        <span>Classic Lorem Ipsum placeholder text</span>
+        <span>{en ? 'Classic Lorem Ipsum placeholder text' : 'Klasik Lorem Ipsum yer tutucu metni'}</span>
       </div>
     </>
   )

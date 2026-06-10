@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function makeCard(val: string, sub: string) {
@@ -26,6 +27,7 @@ function rgbToHsl(r: number, g: number, b: number) {
 }
 
 export default function ColorConverter() {
+  const { en } = useTT()
   const [hex, setHex] = useState('#1D9E75')
   const [pickerVal, setPickerVal] = useState('#1D9E75')
   const [out, setOut] = useState('')
@@ -34,7 +36,7 @@ export default function ColorConverter() {
   const convert = (h: string) => {
     let val = h.trim()
     if (!val.startsWith('#')) val = '#' + val
-    if (!/^#[0-9a-fA-F]{6}$/.test(val)) { setOut('<div style="color:var(--red);font-size:.78rem">Invalid hex color</div>'); return }
+    if (!/^#[0-9a-fA-F]{6}$/.test(val)) { setOut(`<div style="color:var(--red);font-size:.78rem">${en ? 'Invalid hex color' : 'Geçersiz hex renk'}</div>`); return }
     setSwatch(val)
     const {r,g,b} = hexToRgb(val)
     const {h: hh,s,l} = rgbToHsl(r,g,b)
@@ -50,7 +52,7 @@ export default function ColorConverter() {
           <div style={{ display:'flex', gap:10, alignItems:'center', marginBottom:'1rem', flexWrap:'wrap' }}>
             <input type="color" value={pickerVal} onChange={e => { setPickerVal(e.target.value); setHex(e.target.value); convert(e.target.value) }} style={{ width:44, height:36, border:'1px solid var(--border2)', borderRadius:6, background:'none', cursor:'pointer', padding:2 }} />
             <input className="tool-input" style={{ width:130 }} placeholder="#1D9E75" value={hex} onChange={e => setHex(e.target.value)} />
-            <button className="btn primary" onClick={() => convert(hex)}>Convert</button>
+            <button className="btn primary" onClick={() => convert(hex)}>{en ? 'Convert' : 'Dönüştür'}</button>
           </div>
           <div className="gen-grid" dangerouslySetInnerHTML={{ __html: out }} />
           <div style={{ marginTop:'1rem', height:60, borderRadius:10, border:'1px solid var(--border)', background: swatch, transition:'background .2s' }} />

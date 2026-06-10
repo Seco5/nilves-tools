@@ -1,7 +1,9 @@
 'use client'
 import { useState } from 'react'
+import { useTT } from '@/lib/toolText'
 
 export default function Base64() {
+  const { tt, en } = useTT()
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
 
@@ -25,25 +27,25 @@ export default function Base64() {
       <div className="split" style={{ flex: 1 }}>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Input</span>
+            <span className="pane-label">{tt.input}</span>
             <div className="btn-group">
-              <button className="btn primary" onClick={encode}>Encode ↓</button>
-              <button className="btn" onClick={decode}>Decode ↑</button>
+              <button className="btn primary" onClick={encode}>{tt.encode} ↓</button>
+              <button className="btn" onClick={decode}>{tt.decode} ↑</button>
             </div>
           </div>
-          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste text or Base64…" spellCheck={false} />
+          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={en ? 'Paste text or Base64…' : 'Metin veya Base64 yapıştırın…'} spellCheck={false} />
         </div>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Output</span>
-            <div className="btn-group"><button className="btn" onClick={copy}>copy</button></div>
+            <span className="pane-label">{tt.output}</span>
+            <div className="btn-group"><button className="btn" onClick={copy}>{tt.copy}</button></div>
           </div>
           <textarea value={output} readOnly />
         </div>
       </div>
       <div className="statusbar">
         <span className="chip chip-ok">BASE64</span>
-        <span>Encode / Decode</span>
+        <span>{tt.encode} / {tt.decode}</span>
       </div>
     </>
   )

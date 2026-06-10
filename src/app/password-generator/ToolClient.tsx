@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1)) + a }
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
@@ -9,6 +10,7 @@ function makeCard(val: string, sub: string) {
 }
 
 export default function PasswordGenerator() {
+  const { tt, en } = useTT()
   const [len, setLen] = useState(20)
   const [upper, setUpper] = useState(true)
   const [lower, setLower] = useState(true)
@@ -24,7 +26,7 @@ export default function PasswordGenerator() {
     if (s) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?'
     if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz'
     const pw = Array.from({length: l}, () => chars[ri(0, chars.length-1)]).join('')
-    setGrid(makeCard(pw, 'Generated password'))
+    setGrid(makeCard(pw, en ? 'Generated password' : 'Üretilen şifre'))
   }
 
   useEffect(() => { gen() }, [])
@@ -34,20 +36,20 @@ export default function PasswordGenerator() {
       <div className="tool-wrap">
         <div className="tool-section">
           <div style={{ display:'flex', gap:12, flexWrap:'wrap', alignItems:'center', marginBottom:'1rem' }}>
-            <label className="gen-label">Length: <input type="number" value={len} min={8} max={128} className="gen-num" style={{marginLeft:6}} onChange={e=>setLen(Number(e.target.value))} /></label>
-            {[['upper','Uppercase',upper,setUpper],['lower','Lowercase',lower,setLower],['num','Numbers',num,setNum],['sym','Symbols',sym,setSym]].map(([k,label,val,setter]) => (
+            <label className="gen-label">{tt.length}: <input type="number" value={len} min={8} max={128} className="gen-num" style={{marginLeft:6}} onChange={e=>setLen(Number(e.target.value))} /></label>
+            {[['upper',tt.uppercase,upper,setUpper],['lower',tt.lowercase,lower,setLower],['num',tt.numbers,num,setNum],['sym',tt.symbols,sym,setSym]].map(([k,label,val,setter]) => (
               <label key={k as string} style={{display:'flex',alignItems:'center',gap:5,fontSize:'.78rem',color:'var(--muted2)',cursor:'pointer'}}>
                 <input type="checkbox" checked={val as boolean} onChange={e => { (setter as (v:boolean)=>void)(e.target.checked) }} /> {label as string}
               </label>
             ))}
-            <button className="btn primary" onClick={() => gen()}>Generate</button>
+            <button className="btn primary" onClick={() => gen()}>{tt.generate}</button>
           </div>
           <div className="gen-grid" id="pw-grid" style={{ gridTemplateColumns:'1fr' }} dangerouslySetInnerHTML={{ __html: grid }} />
         </div>
       </div>
       <div className="statusbar">
         <span className="chip chip-ok">PASSWORD</span>
-        <span>Cryptographically secure random passwords</span>
+        <span>{en ? 'Cryptographically secure random passwords' : 'Kriptografik güvenli rastgele şifreler'}</span>
       </div>
     </>
   )

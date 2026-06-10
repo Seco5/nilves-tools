@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function ri(a: number, b: number) { return Math.floor(Math.random() * (b - a + 1)) + a }
 const NC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'
@@ -12,6 +13,7 @@ function makeCard(val: string, sub: string) {
 }
 
 export default function UuidGenerator() {
+  const { tt, en } = useTT()
   const [ver, setVer] = useState('4')
   const [count, setCount] = useState(8)
   const [grid, setGrid] = useState('')
@@ -41,23 +43,23 @@ export default function UuidGenerator() {
     <>
       <div className="gen-wrap">
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', marginBottom:'1.25rem' }}>
-          <label className="gen-label">Type:</label>
+          <label className="gen-label">{tt.type}:</label>
           <select className="gen-sel" value={ver} onChange={e => setVer(e.target.value)}>
-            <option value="4">UUID v4 (random)</option>
+            <option value="4">{en ? 'UUID v4 (random)' : 'UUID v4 (rastgele)'}</option>
             <option value="nil">NIL UUID</option>
-            <option value="short">Short ID (8 chars)</option>
-            <option value="nano">NanoID (21 chars)</option>
+            <option value="short">{en ? 'Short ID (8 chars)' : 'Kısa ID (8 karakter)'}</option>
+            <option value="nano">{en ? 'NanoID (21 chars)' : 'NanoID (21 karakter)'}</option>
           </select>
-          <label className="gen-label">Count:</label>
+          <label className="gen-label">{tt.count}:</label>
           <input type="number" min={1} max={50} value={count} onChange={e => setCount(Number(e.target.value))} className="gen-num" />
-          <button className="btn primary" onClick={gen}>Generate</button>
-          <button className="btn" onClick={copyAll}>Copy all</button>
+          <button className="btn primary" onClick={gen}>{tt.generate}</button>
+          <button className="btn" onClick={copyAll}>{tt.copyAll}</button>
         </div>
         <div className="gen-grid" id="uuid-grid" dangerouslySetInnerHTML={{ __html: grid }} />
       </div>
       <div className="statusbar">
         <span className="chip chip-ok">UUID</span>
-        <span>Cryptographically random unique identifiers</span>
+        <span>{en ? 'Cryptographically random unique identifiers' : 'Kriptografik rastgele benzersiz kimlikler'}</span>
       </div>
     </>
   )

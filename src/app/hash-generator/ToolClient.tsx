@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function makeCard(val: string, sub: string) {
@@ -37,6 +38,7 @@ function md5(s: string) {
 }
 
 export default function HashGenerator() {
+  const { tt, en } = useTT()
   const [input, setInput] = useState('')
   const [results, setResults] = useState('')
 
@@ -50,8 +52,8 @@ export default function HashGenerator() {
     <>
       <div className="tool-wrap">
         <div className="tool-section">
-          <label className="tool-label">Input text</label>
-          <textarea className="tool-textarea" style={{ height:80 }} placeholder="Text to hash…" value={input} onChange={e => { setInput(e.target.value); compute(e.target.value) }} spellCheck={false} />
+          <label className="tool-label">{tt.inputText}</label>
+          <textarea className="tool-textarea" style={{ height:80 }} placeholder={en ? 'Text to hash…' : 'Hash’lenecek metin…'} value={input} onChange={e => { setInput(e.target.value); compute(e.target.value) }} spellCheck={false} />
           <div className="gen-grid" style={{ marginTop:'1rem' }} dangerouslySetInnerHTML={{ __html: results }} />
         </div>
       </div>
