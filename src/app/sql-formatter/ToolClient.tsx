@@ -2,6 +2,28 @@
 import { useState, useRef } from 'react'
 import { format as sqlFormat } from 'sql-formatter'
 import LineNumbers from '@/components/LineNumbers'
+import { useLanguage } from '@/contexts/LanguageContext'
+
+const L10N = {
+  tr: {
+    spaces2: '2 boşluk', spaces4: '4 boşluk', tab: 'Tab',
+    upper: 'BÜYÜK HARF', lower: 'küçük harf', formatOnPaste: 'Yapıştırınca biçimlendir',
+    sample: 'Örnek', format: 'Biçimlendir', minify: 'Küçült', copy: 'Kopyala', clear: 'Temizle',
+    input: 'Girdi', formatted: 'Biçimlendirilmiş', placeholder: 'SQL sorgunuzu buraya yapıştırın…',
+    idle: 'BEKLEMEDE', valid: 'GEÇERLİ', error: 'HATA', minified: 'KÜÇÜLTÜLDÜ',
+    pasteToBegin: 'Başlamak için SQL yapıştırın', looksValid: 'Geçerli görünüyor', invalidSql: 'Geçersiz SQL', stripped: 'Boşluklar temizlendi',
+    lines: 'satır', chars: 'karakter', keywords: 'anahtar kelime',
+  },
+  en: {
+    spaces2: '2 spaces', spaces4: '4 spaces', tab: 'Tab',
+    upper: 'UPPERCASE', lower: 'lowercase', formatOnPaste: 'Format on paste',
+    sample: 'Sample', format: 'Format', minify: 'Minify', copy: 'Copy', clear: 'Clear',
+    input: 'Input', formatted: 'Formatted', placeholder: 'Paste your SQL query here…',
+    idle: 'IDLE', valid: 'VALID', error: 'ERROR', minified: 'MINIFIED',
+    pasteToBegin: 'Paste SQL to begin', looksValid: 'Looks valid', invalidSql: 'Invalid SQL', stripped: 'Whitespace stripped',
+    lines: 'lines', chars: 'chars', keywords: 'keywords',
+  },
+} as const
 
 type Dialect = 'mysql' | 'postgresql' | 'sqlite' | 'tsql' | 'plsql' | 'bigquery'
 
@@ -97,12 +119,14 @@ function countKeywords(sql: string): number {
 }
 
 export default function SqlFormatter() {
+  const { lang } = useLanguage()
+  const L = L10N[lang === 'en' ? 'en' : 'tr']
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [outLines, setOutLines] = useState(1)
   const [chip, setChip] = useState<'idle' | 'ok' | 'err' | 'min'>('idle')
-  const [chipTxt, setChipTxt] = useState('IDLE')
-  const [msg, setMsg] = useState('Paste SQL to begin')
+  const [chipTxt, setChipTxt] = useState<string>(L.idle)
+  const [msg, setMsg] = useState<string>(L.pasteToBegin)
   const [stats, setStats] = useState('')
 
   const [dialect, setDialect] = useState<Dialect>('mysql')
@@ -123,14 +147,14 @@ export default function SqlFormatter() {
   }
 
   const setStatsFor = (text: string, src: string) => {
-    setStats(`${text.split('\n').length} lines · ${src.length} chars · ${countKeywords(src)} keywords`)
+    setStats(`${text.split('\n').length} ${L.lines} · ${src.length} ${L.chars} · ${countKeywords(src)} ${L.keywords}`)
   }
 
   const doFormat = (raw: string) => {
     const src = raw ?? input
     if (!src.trim()) {
       setOutput(''); setOutLines(1)
-      setChip('idle'); setChipTxt('IDLE'); setMsg('Paste SQL to begin'); setStats('')
+      setChip('idle'); setChipTxt(L.idle); setMsg(L.pasteToBegin); setStats('')
       return
     }
     const v = validate(src)
@@ -148,9 +172,9 @@ export default function SqlFormatter() {
     showOut(formatted)
     setStatsFor(formatted, src)
     if (v.ok) {
-      setChip('ok'); setChipTxt('VALID'); setMsg('Looks valid')
+      setChip('ok'); setChipTxt(L.valid); setMsg(L.looksValid)
     } else {
-      setChip('err'); setChipTxt('ERROR'); setMsg(v.error || 'Invalid SQL')
+      setChip('err'); setChipTxt(L.error); setMsg(v.error || L.invalidSql)
     }
   }
 
@@ -166,13 +190,13 @@ export default function SqlFormatter() {
       .trim()
     showOut(min)
     setStatsFor(min, min)
-    setChip('min'); setChipTxt('MINIFIED'); setMsg('Whitespace stripped')
+    setChip('min'); setChipTxt(L.minified); setMsg(L.stripped)
   }
 
   const loadSample = () => { setInput(SAMPLE); doFormat(SAMPLE) }
   const clearAll = () => {
     setInput(''); setOutput(''); setOutLines(1)
-    setChip('idle'); setChipTxt('IDLE'); setMsg('Paste SQL to begin'); setStats('')
+    setChip('idle'); setChipTxt(L.idle); setMsg(L.pasteToBegin); setStats('')
   }
 
   const onPaste = () => {
@@ -203,31 +227,31 @@ export default function SqlFormatter() {
             {DIALECTS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
           </select>
           <select className="indent-sel" value={indent} onChange={e => setIndent(e.target.value as '2'|'4'|'tab')} aria-label="Indent">
-            <option value="2">2 spaces</option>
-            <option value="4">4 spaces</option>
-            <option value="tab">Tab</option>
+            <option value="2">{L.spaces2}</option>
+            <option value="4">{L.spaces4}</option>
+            <option value="tab">{L.tab}</option>
           </select>
           <div className="sql-case">
-            <button className={`sql-case-btn${upper ? ' active' : ''}`} onClick={() => setUpper(true)}>UPPERCASE</button>
-            <button className={`sql-case-btn${!upper ? ' active' : ''}`} onClick={() => setUpper(false)}>lowercase</button>
+            <button className={`sql-case-btn${upper ? ' active' : ''}`} onClick={() => setUpper(true)}>{L.upper}</button>
+            <button className={`sql-case-btn${!upper ? ' active' : ''}`} onClick={() => setUpper(false)}>{L.lower}</button>
           </div>
           <label className="sql-paste-toggle">
             <input type="checkbox" checked={fmtOnPaste} onChange={e => setFmtOnPaste(e.target.checked)} />
-            Format on paste
+            {L.formatOnPaste}
           </label>
         </div>
         <div className="sql-toolbar-right btn-group">
-          <button className="btn-action ghost" onClick={loadSample}>Sample</button>
-          <button className="btn-action format" onClick={() => doFormat('')}>Format ↵</button>
-          <button className="btn-action minify" onClick={minify}>Minify</button>
-          <button className="btn-action copy" onClick={copyOut}>Copy</button>
-          <button className="btn-action ghost" onClick={clearAll}>Clear</button>
+          <button className="btn-action ghost" onClick={loadSample}>{L.sample}</button>
+          <button className="btn-action format" onClick={() => doFormat('')}>{L.format} ↵</button>
+          <button className="btn-action minify" onClick={minify}>{L.minify}</button>
+          <button className="btn-action copy" onClick={copyOut}>{L.copy}</button>
+          <button className="btn-action ghost" onClick={clearAll}>{L.clear}</button>
         </div>
       </div>
 
       <div className="split" style={{ flex: 1 }}>
         <div className="pane">
-          <div className="pane-hdr"><span className="pane-label">Input</span></div>
+          <div className="pane-hdr"><span className="pane-label">{L.input}</span></div>
           <div className="code-area">
             <LineNumbers ref={inGutter} count={Math.max(1, input.split('\n').length)} />
             <textarea
@@ -235,14 +259,14 @@ export default function SqlFormatter() {
               onChange={e => handleInput(e.target.value)}
               onScroll={syncIn}
               onPaste={onPaste}
-              placeholder="Paste your SQL query here…"
+              placeholder={L.placeholder}
               spellCheck={false}
             />
           </div>
         </div>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Formatted</span>
+            <span className="pane-label">{L.formatted}</span>
             <span className={`chip chip-${chip}`}>{chipTxt}</span>
           </div>
           <div className="code-area">
