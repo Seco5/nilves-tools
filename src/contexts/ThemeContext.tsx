@@ -7,7 +7,7 @@ type Ctx = { theme: Theme; setTheme: (t: Theme) => void; toggle: () => void }
 const ThemeContext = createContext<Ctx | null>(null)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark')
+  const [theme, setThemeState] = useState<Theme>('light')
 
   useEffect(() => {
     const saved = localStorage.getItem('devonekit-theme') as Theme | null

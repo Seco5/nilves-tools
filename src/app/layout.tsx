@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="tr"
-      data-theme="dark"
+      data-theme="light"
       className={`${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >

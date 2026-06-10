@@ -1,336 +1,337 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Copy, RefreshCw, CheckCircle2, FlaskConical, ShieldCheck, Scale } from 'lucide-react'
+import { useState, type CSSProperties } from 'react'
+import Link from 'next/link'
+import { Copy, Check, RefreshCw, Building2, ShieldOff, Scale, Plus } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 // ── Algoritma ─────────────────────────────────────────────────────────────────
-function generateVKN(): string {
-  const d: number[] = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10))
-  const tmp: number[] = d.map((v, i) => (v + 9 - i) % 10)
-  const check = tmp.reduce((acc, v, i) => {
-    const x = (v * Math.pow(2, 9 - i)) % 9
-    return acc + (x === 0 && v !== 0 ? 9 : x)
-  }, 0)
-  d[9] = check % 10 === 0 ? 0 : 10 - (check % 10)
+function genOneVKN(): string {
+  const d = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10))
+  const tmp = d.map((v, i) => {
+    const p = (v + (9 - i)) % 10
+    if (p === 0) return 0
+    const mod = (p * Math.pow(2, 9 - i)) % 9
+    return mod === 0 ? 9 : mod
+  })
+  d[9] = tmp.reduce((a, b) => a + b, 0) % 10
   return d.join('')
-}
-
-// ── Copy Hook ─────────────────────────────────────────────────────────────────
-function useCopy() {
-  const [copied, setCopied] = useState<string | null>(null)
-  const copy = useCallback((text: string, key: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(key)
-    setTimeout(() => setCopied(null), 2000)
-  }, [])
-  return { copied, copy }
 }
 
 // ── i18n ──────────────────────────────────────────────────────────────────────
 const T = {
   tr: {
-    badge: '🇹🇷 Türkiye Araçları',
+    badge: '🇹🇷 TÜRKİYE ARAÇLARI',
     title: 'VKN Üretici',
-    subtitle: 'Algoritma geçerli Vergi Kimlik Numarası üretin. Yalnızca test ve geliştirme amaçlıdır.',
-    idLabel: 'Vergi Kimlik Numarası',
-    idLabelShort: 'Vergi No',
-    countLabel: 'Adet',
-    generate: 'Üret',
+    subtitle: 'Algoritma geçerli Vergi Kimlik Numarası üretin. Yalnızca yazılım geliştirme ve test amaçlıdır.',
+    displayLabel: 'VERGİ KİMLİK NUMARASI',
     copy: 'Kopyala',
-    copyAll: 'Tümünü Kopyala',
-    copied: 'Kopyalandı',
-    rulesTitle: 'Kullanım Kuralları',
+    copied: 'Kopyalandı!',
+    count: 'Adet',
+    generate: 'Üret',
     cards: [
-      { title: 'Yalnızca Test Amaçlı', text: 'Yazılım geliştirme ve test süreçleri için tasarlanmıştır.' },
-      { title: 'Gerçek Mükellef Yok', text: 'Hiçbir zaman gerçek bir mükellefe ait değildir.' },
-      { title: 'Yasal Sorumluluk', text: 'Kötüye kullanımdan doğan sorumluluk kullanıcıya aittir.' },
+      { title: 'Kurumsal Test Aracı', desc: 'Muhasebe ve ERP sistemlerini test etmek için tasarlanmıştır.' },
+      { title: 'Gerçek Mükellef Yok', desc: 'Hiçbir zaman gerçek bir vergi mükellefi veya şirkete ait değildir.' },
+      { title: 'Yasal Sorumluluk', desc: 'Kötüye kullanımdan doğan sorumluluk kullanıcıya aittir.' },
     ],
     algoTitle: 'VKN Algoritması Nasıl Çalışır?',
-    algoText:
-      'Vergi Kimlik Numarası 10 haneli olup rastgele üretilmez. Her hane matematiksel kurallara göre hesaplanır; son hane kontrol basamağıdır ve hatalı numaralar sistemler tarafından anında reddedilir.',
+    algoIntro:
+      'VKN rastgele bir sayı değildir. 10 haneden oluşur ve son hane kontrol basamağıdır. Türkiye Gelir İdaresi Başkanlığı tarafından belirlenen algoritmaya göre hesaplanır.',
     colDigit: 'Hane',
     colRule: 'Kural',
     rows: [
       ['1.–9. rakam', '0–9 arası rastgele belirlenir'],
-      ['10. rakam', 'Kontrol basamağı — ilk 9 rakamdan türetilen algoritmik değer'],
+      ['10. rakam', 'GİB algoritmasına göre hesaplanan kontrol hanesi'],
     ],
+    algoExplain:
+      "Her rakam için (rakam + (9 − pozisyon)) mod 10 hesaplanır. Bu değer 0'dan büyükse (değer × 2^(9−pozisyon)) mod 9 alınır; 0 ise 0 kalır. Bu değerlerin toplamının mod 10'u kontrol hanesidir.",
     faqTitle: 'Sık Sorulan Sorular',
     faq: [
-      { q: 'VKN üretmek yasal mı?', a: 'Yazılım geliştirme ve test süreçleri için algoritmaya uygun VKN üretmek meşru bir ihtiyaçtır. Ancak vergi kaçakçılığı veya sahte belge düzenleme gibi amaçlarla kullanmak ağır hukuki sonuçlar doğurur.' },
-      { q: 'Üretilen numara gerçek bir mükellefe ait olabilir mi?', a: 'Matematiksel olarak mümkündür ancak olasılığı son derece düşüktür. Üretilen numaraları gerçek bir mükellefin verisi gibi işlemeyin.' },
-      { q: 'VKN kaç haneli?', a: 'Türkiye Vergi Kimlik Numarası 10 haneden oluşur. Son hane algoritmik olarak hesaplanan kontrol basamağıdır.' },
-      { q: 'Tek seferde kaç adet üretebilirim?', a: 'Adet alanına 1–50 arası bir değer girip Üret butonuna basabilirsiniz. Toplu kopyalama için “Tümünü Kopyala” butonunu kullanın.' },
-      { q: 'Bu araç ücretsiz mi?', a: 'Evet. DevOneKit’teki tüm araçlar tamamen ücretsiz ve kayıt gerektirmez.' },
+      { q: 'VKN üretmek yasal mı?', a: 'Test ve geliştirme amacıyla algoritma geçerli VKN üretmek yasal bir faaliyettir. Ancak bu numaraları vergi kaçakçılığı veya sahte fatura düzenlemek amacıyla kullanmak yasaktır ve ağır cezai yaptırımları vardır.' },
+      { q: 'VKN ile TCKN arasındaki fark nedir?', a: "TCKN bireysel vatandaşlara ait 11 haneli kimlik numarasıdır. VKN ise şirketler dahil tüm vergi mükelleflerine ait 10 haneli numaradır. Gerçek kişiler için VKN, TCKN'den türetilir." },
+      { q: 'Üretilen VKN e-fatura sisteminde çalışır mı?', a: 'Hayır. Üretilen VKN yalnızca format olarak geçerlidir. GİB sistemlerinde gerçek bir mükellef kaydı bulunmadığı için e-fatura, e-arşiv veya benzeri sistemlerde kullanılamaz.' },
+      { q: "Şirket VKN'si ile bireysel VKN farkı var mı?", a: "Evet. Bireysel vergi mükelleflerinde VKN, TCKN'nin belirli hanelerinden türetilir. Tüzel kişilerde (şirketler) ise GİB tarafından bağımsız olarak atanır. Bu araç her iki format için de geçerli numara üretir." },
+      { q: 'Bu araç ücretsiz mi?', a: 'Evet, tamamen ücretsizdir. Kayıt, üyelik veya ödeme gerekmez. Tüm araçlar tarayıcınızda çalışır ve hiçbir veriniz sunucularımıza gönderilmez.' },
     ],
     relatedTitle: 'İlgili Araçlar',
     related: [
-      { label: 'TCKN Üretici', href: '/tckn-generator' },
-      { label: 'IBAN Üretici', href: '/iban-generator' },
-      { label: 'Kredi Kartı No', href: '/credit-card-generator' },
+      { label: 'Türkiye', name: 'TCKN Üretici', desc: 'TC Kimlik Numarası', href: '/tckn-generator' },
+      { label: 'Türkiye', name: 'IBAN Üretici', desc: 'TR IBAN numarası', href: '/iban-generator' },
+      { label: 'Test', name: 'Kredi Kartı No', desc: 'Test kart numarası', href: '/credit-card-generator' },
     ],
   },
   en: {
-    badge: '🇹🇷 Turkey Tools',
+    badge: '🇹🇷 TURKISH TOOLS',
     title: 'VKN Generator',
-    subtitle: 'Generate algorithm-valid Turkish Tax ID numbers. For testing and development only.',
-    idLabel: 'Tax Identification Number',
-    idLabelShort: 'Tax No',
-    countLabel: 'Count',
-    generate: 'Generate',
+    subtitle: 'Generate algorithm-valid Turkish Tax Identification numbers. For software development and testing only.',
+    displayLabel: 'TAX IDENTIFICATION NUMBER',
     copy: 'Copy',
-    copyAll: 'Copy All',
-    copied: 'Copied',
-    rulesTitle: 'Usage Rules',
+    copied: 'Copied!',
+    count: 'Count',
+    generate: 'Generate',
     cards: [
-      { title: 'For Testing Only', text: 'Designed for software development and testing processes.' },
-      { title: 'No Real Taxpayer', text: 'Never belongs to a real taxpayer.' },
-      { title: 'Legal Responsibility', text: 'Any liability arising from misuse rests with the user.' },
+      { title: 'Corporate Test Tool', desc: 'Designed for testing accounting and ERP systems.' },
+      { title: 'No Real Taxpayer', desc: 'Never belongs to a real taxpayer or company.' },
+      { title: 'Legal Responsibility', desc: 'Responsibility for misuse belongs to the user.' },
     ],
     algoTitle: 'How Does the VKN Algorithm Work?',
-    algoText:
-      'A Turkish Tax ID is 10 digits and is not random. Each digit follows mathematical rules; the last digit is a check digit, so invalid numbers are instantly rejected by systems.',
+    algoIntro:
+      'VKN is not a random number. It consists of 10 digits and the last digit is a check digit, calculated according to the algorithm set by the Turkish Revenue Administration.',
     colDigit: 'Digit',
     colRule: 'Rule',
     rows: [
-      ['Digits 1–9', 'Randomly chosen between 0–9'],
-      ['Digit 10', 'Check digit — algorithmic value derived from the first 9 digits'],
+      ['1st–9th digits', 'Randomly determined between 0–9'],
+      ['10th digit', 'Check digit calculated by Revenue Administration algorithm'],
     ],
+    algoExplain:
+      'For each digit, (digit + (9 − position)) mod 10 is calculated. If this value is greater than 0, (value × 2^(9−position)) mod 9 is taken; if 0, it stays 0. The mod 10 of the sum of these values is the check digit.',
     faqTitle: 'Frequently Asked Questions',
     faq: [
-      { q: 'Is generating a VKN legal?', a: 'Generating algorithm-valid tax IDs for software development and testing is a legitimate need. However, using them for tax evasion or forging documents leads to serious legal consequences.' },
-      { q: 'Could a generated number belong to a real taxpayer?', a: 'It is mathematically possible but extremely unlikely. Never treat generated numbers as a real taxpayer’s data.' },
-      { q: 'How many digits is a VKN?', a: 'A Turkish Tax ID consists of 10 digits. The last digit is an algorithmically calculated check digit.' },
-      { q: 'How many can I generate at once?', a: 'Enter a value between 1–50 in the Count field and press Generate. Use “Copy All” for bulk copying.' },
-      { q: 'Is this tool free?', a: 'Yes. Every tool on DevOneKit is completely free and requires no registration.' },
+      { q: 'Is generating VKN legal?', a: 'Generating algorithm-valid VKN for testing and development is legal. However, using these numbers for tax evasion or issuing fake invoices is prohibited and carries severe criminal penalties.' },
+      { q: 'What is the difference between VKN and TCKN?', a: 'TCKN is an 11-digit ID number for individual citizens. VKN is a 10-digit number for all taxpayers including companies. For real individuals, VKN is derived from TCKN.' },
+      { q: 'Does the generated VKN work in e-invoice systems?', a: 'No. Generated VKN is only format-valid. Since there is no real taxpayer record in Revenue Administration systems, it cannot be used in e-invoice, e-archive or similar systems.' },
+      { q: 'Is there a difference between company VKN and individual VKN?', a: 'Yes. For individual taxpayers, VKN is derived from specific digits of TCKN. For legal entities (companies), it is independently assigned by Revenue Administration. This tool generates valid numbers for both formats.' },
+      { q: 'Is this tool free?', a: 'Yes, completely free. No registration, membership or payment required. All tools run in your browser and none of your data is sent to our servers.' },
     ],
     relatedTitle: 'Related Tools',
     related: [
-      { label: 'TCKN Generator', href: '/tckn-generator' },
-      { label: 'IBAN Generator', href: '/iban-generator' },
-      { label: 'Credit Card No', href: '/credit-card-generator' },
+      { label: 'Turkish', name: 'TCKN Generator', desc: 'Turkish National ID', href: '/tckn-generator' },
+      { label: 'Turkish', name: 'IBAN Generator', desc: 'TR IBAN number', href: '/iban-generator' },
+      { label: 'Test', name: 'Credit Card No', desc: 'Test card number', href: '/credit-card-generator' },
     ],
   },
 } as const
 
-// ── Info Card ─────────────────────────────────────────────────────────────────
-function InfoCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return (
-    <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-      <div className="text-[var(--teal)]">{icon}</div>
-      <p className="text-base font-semibold text-[var(--text)]">{title}</p>
-      <p className="text-sm leading-7 text-[var(--muted2)]">{text}</p>
-    </div>
-  )
+const CARD_ICONS = [Building2, ShieldOff, Scale]
+
+const sectionTitle: CSSProperties = {
+  fontSize: 16,
+  fontWeight: 500,
+  color: 'var(--text)',
+  marginBottom: '.875rem',
+  paddingBottom: '.5rem',
+  borderBottom: '0.5px solid var(--border)',
 }
 
-// ── FAQ Item ──────────────────────────────────────────────────────────────────
-function FaqItem({ q, a }: { q: string; a: string }) {
+// ── FAQ item ──────────────────────────────────────────────────────────────────
+function FaqItem({ q, a, last }: { q: string; a: string; last: boolean }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="border-b border-[var(--border)] last:border-0">
+    <div style={{ borderBottom: last ? 'none' : '0.5px solid var(--border)' }}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-4 text-left text-[15px] text-[var(--text)] transition-colors hover:text-[var(--teal)]"
+        style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+          padding: '12px 0', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--text)',
+          background: 'none', border: 'none', textAlign: 'left',
+        }}
       >
         <span>{q}</span>
-        <span className="ml-6 shrink-0 text-lg text-[var(--teal)]">{open ? '−' : '+'}</span>
+        <Plus
+          size={16}
+          style={{
+            flexShrink: 0, marginLeft: 16,
+            color: open ? 'var(--teal)' : 'var(--muted)',
+            transform: open ? 'rotate(45deg)' : 'none',
+            transition: 'transform .2s, color .2s',
+          }}
+        />
       </button>
-      {open && <p className="pb-4 text-sm leading-7 text-[var(--muted2)]">{a}</p>}
+      <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows .25s ease' }}>
+        <div style={{ overflow: 'hidden' }}>
+          <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7, paddingBottom: 12 }}>{a}</p>
+        </div>
+      </div>
     </div>
   )
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function VKNToolClient() {
+export default function VknGeneratorClient() {
   const { lang } = useLanguage()
   const t = T[lang === 'en' ? 'en' : 'tr']
-  const [list, setList] = useState<string[]>([generateVKN()])
+  const [list, setList] = useState<string[]>([genOneVKN()])
   const [count, setCount] = useState(1)
-  const [genKey, setGenKey] = useState(0)
-  const { copied, copy } = useCopy()
-  const single = list.length === 1
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
+  const copy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedKey(key)
+    setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1500)
+  }
   const generate = () => {
     const n = Math.min(Math.max(1, count), 50)
-    setList(Array.from({ length: n }, () => generateVKN()))
-    setGenKey((k) => k + 1)
+    setList(Array.from({ length: n }, () => genOneVKN()))
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-20 px-6 py-16 md:px-10">
-      {/* Hero */}
-      <section className="space-y-4 text-center">
-        <span className="inline-block rounded-full bg-[var(--teal-dim)] px-3 py-1 text-xs font-medium uppercase tracking-widest text-[var(--teal)]">
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: '2rem 1rem' }}>
+      {/* HERO */}
+      <section style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <span
+          style={{
+            display: 'inline-flex', background: 'var(--teal-dim)', color: 'var(--teal)',
+            fontSize: 11, padding: '3px 12px', borderRadius: 20, letterSpacing: '.04em', fontWeight: 500,
+          }}
+        >
           {t.badge}
         </span>
-        <h1 className="text-4xl font-bold tracking-tight text-[var(--text)]">{t.title}</h1>
-        <p className="mx-auto max-w-sm text-sm leading-relaxed text-[var(--muted2)]">{t.subtitle}</p>
+        <h1 style={{ fontSize: 28, fontWeight: 500, margin: '.75rem 0 .5rem', color: 'var(--text)' }}>{t.title}</h1>
+        <p style={{ fontSize: 14, color: 'var(--muted2)', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>{t.subtitle}</p>
       </section>
 
-      {/* Üretici + Kullanım Kuralları — bağlamsal grup */}
-      <div className="space-y-6">
-        <section className="space-y-4">
-          {single && (
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-10 text-center">
-              <p className="mb-5 text-xs uppercase tracking-widest text-[var(--muted)]">{t.idLabel}</p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <p
-                  key={genKey}
-                  className="tckn-flash rounded-xl border border-[var(--border2)] bg-[var(--bg)] px-8 py-6 font-mono text-4xl font-bold tabular-nums tracking-[0.15em] text-[#22c55e] sm:text-5xl"
-                >
-                  {list[0]}
-                </p>
-                <button
-                  onClick={() => copy(list[0], '0')}
-                  className="flex items-center gap-2 rounded-xl border border-[var(--border2)] bg-[var(--surface2)] px-4 py-2.5 text-sm font-medium text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"
-                  title={t.copy}
-                >
-                  {copied === '0' ? (
-                    <>
-                      <CheckCircle2 size={16} className="text-[#16a34a]" />
-                      <span className="text-[#16a34a]">{t.copied}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={16} />
-                      {t.copy}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!single && (
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {list.map((vkn, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4"
-                >
-                  <div className="space-y-0.5">
-                    <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">{t.idLabelShort}</p>
-                    <p className="font-mono text-lg font-semibold tracking-wider text-[var(--text)]">{vkn}</p>
-                  </div>
-                  <button
-                    onClick={() => copy(vkn, String(i))}
-                    className="ml-4 rounded-lg border border-[var(--border2)] p-2.5 text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"
-                    title={t.copy}
-                  >
-                    {copied === String(i) ? <CheckCircle2 size={15} className="text-[#16a34a]" /> : <Copy size={15} />}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--muted2)]">{t.countLabel}</span>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                value={count}
-                onChange={(e) => setCount(Number(e.target.value))}
-                className="w-16 rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-2 py-3 text-center text-sm text-[var(--text)] focus:border-[#16a34a] focus:outline-none"
-              />
-            </div>
+      {/* GENERATOR CARD */}
+      <section
+        style={{
+          background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 14,
+          padding: '1.5rem', marginBottom: '1.5rem',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+          <div
+            style={{
+              fontSize: 10, fontWeight: 500, letterSpacing: '.12em', textTransform: 'uppercase',
+              color: 'var(--muted)', marginBottom: '.5rem',
+            }}
+          >
+            {t.displayLabel}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 36, fontWeight: 500, color: 'var(--teal)', letterSpacing: '.12em' }}>
+              {list[0]}
+            </span>
             <button
-              onClick={generate}
-              className="flex min-w-[100px] items-center justify-center gap-2 rounded-xl bg-[#16a34a] px-7 py-3 text-[15px] font-semibold text-white transition-all duration-150 hover:bg-[#15803d] active:scale-[0.98]"
+              onClick={() => copy(list[0], 'main')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, border: '0.5px solid var(--border2)',
+                borderRadius: 8, padding: '6px 14px', background: 'transparent', fontSize: 12, cursor: 'pointer',
+                color: copiedKey === 'main' ? 'var(--teal)' : 'var(--muted2)',
+              }}
             >
-              <RefreshCw size={16} />
-              {t.generate}
+              {copiedKey === 'main' ? <Check size={14} /> : <Copy size={14} />}
+              {copiedKey === 'main' ? t.copied : t.copy}
             </button>
-            {!single && (
-              <button
-                onClick={() => copy(list.join('\n'), 'all')}
-                className="flex items-center gap-2 rounded-xl border border-[var(--border2)] px-4 py-3 text-sm text-[var(--muted2)] transition-colors hover:border-[#16a34a] hover:text-[#16a34a]"
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <label style={{ fontSize: 13, color: 'var(--muted2)' }}>{t.count}</label>
+          <input
+            type="number"
+            min={1}
+            max={50}
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+            style={{
+              width: 64, textAlign: 'center', padding: '7px 8px', borderRadius: 8,
+              border: '0.5px solid var(--border)', background: 'var(--surface2)', color: 'var(--text)', fontSize: 13,
+            }}
+          />
+          <button
+            onClick={generate}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 24px', background: 'var(--teal)',
+              color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            }}
+          >
+            <RefreshCw size={14} />
+            {t.generate}
+          </button>
+        </div>
+
+        {list.length > 1 && (
+          <div
+            style={{
+              marginTop: '1rem', background: 'var(--surface2)', borderRadius: 8, padding: 12,
+              fontFamily: 'var(--mono)', fontSize: 13, lineHeight: 2, color: 'var(--text)',
+            }}
+          >
+            {list.map((vkn, i) => (
+              <div
+                key={i}
+                onClick={() => copy(vkn, `b${i}`)}
+                style={{ cursor: 'pointer', color: copiedKey === `b${i}` ? 'var(--teal)' : 'var(--text)' }}
+                title={t.copy}
               >
-                {copied === 'all' ? (
-                  <>
-                    <CheckCircle2 size={14} className="text-[#16a34a]" />
-                    <span className="text-[#16a34a]">{t.copied}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy size={13} />
-                    {t.copyAll}
-                  </>
-                )}
-              </button>
-            )}
+                {vkn}
+              </div>
+            ))}
           </div>
-        </section>
+        )}
+      </section>
 
-        {/* Kullanım Kuralları */}
-        <section className="space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">{t.rulesTitle}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <InfoCard icon={<FlaskConical size={20} />} title={t.cards[0].title} text={t.cards[0].text} />
-            <InfoCard icon={<ShieldCheck size={20} />} title={t.cards[1].title} text={t.cards[1].text} />
-            <InfoCard icon={<Scale size={20} />} title={t.cards[2].title} text={t.cards[2].text} />
-          </div>
-        </section>
-      </div>
+      {/* INFO CARDS */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: '1.5rem' }}>
+        {t.cards.map((c, i) => {
+          const Icon = CARD_ICONS[i]
+          return (
+            <div key={i} style={{ background: 'var(--surface2)', borderRadius: 10, padding: '1rem' }}>
+              <div
+                style={{
+                  width: 32, height: 32, borderRadius: 8, background: 'var(--teal-dim)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '.625rem',
+                }}
+              >
+                <Icon size={16} style={{ color: 'var(--teal)' }} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{c.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted2)', lineHeight: 1.5 }}>{c.desc}</div>
+            </div>
+          )
+        })}
+      </section>
 
-      {/* Algoritma */}
-      <section className="space-y-4 pt-8">
-        <div className="space-y-2">
-          <h2 className="text-xl font-bold text-[var(--text)]">{t.algoTitle}</h2>
-          <p className="text-sm leading-7 text-[var(--muted2)]">{t.algoText}</p>
-        </div>
-        <div className="overflow-hidden rounded-2xl border border-[var(--border)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] bg-[var(--surface2)]">
-                <th className="w-40 px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
-                  {t.colDigit}
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
-                  {t.colRule}
-                </th>
+      {/* ALGORITHM */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2 style={sectionTitle}>{t.algoTitle}</h2>
+        <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7, marginBottom: '1rem' }}>{t.algoIntro}</p>
+        <table className="tckn-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr>
+              <th>{t.colDigit}</th>
+              <th>{t.colRule}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {t.rows.map(([digit, rule], i) => (
+              <tr key={i}>
+                <td className="mono-cell">{digit}</td>
+                <td>{rule}</td>
               </tr>
-            </thead>
-            <tbody>
-              {t.rows.map(([digit, rule], i) => (
-                <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                  <td className="px-5 py-4 font-mono text-xs text-[var(--muted2)]">{digit}</td>
-                  <td className="px-5 py-4 leading-6 text-[var(--muted2)]">{rule}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+        <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7, marginTop: '1rem' }}>{t.algoExplain}</p>
       </section>
 
-      {/* SSS */}
-      <section className="space-y-4 pt-8">
-        <h2 className="text-xl font-bold text-[var(--text)]">{t.faqTitle}</h2>
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6">
-          {t.faq.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+      {/* FAQ */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2 style={sectionTitle}>{t.faqTitle}</h2>
+        {t.faq.map((f, i) => (
+          <FaqItem key={i} q={f.q} a={f.a} last={i === t.faq.length - 1} />
+        ))}
+      </section>
+
+      {/* RELATED */}
+      <section>
+        <h2 style={sectionTitle}>{t.relatedTitle}</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {t.related.map((r) => (
+            <Link key={r.href} href={r.href} className="tckn-related-card">
+              <div
+                style={{
+                  fontSize: 10, fontWeight: 500, letterSpacing: '.06em', textTransform: 'uppercase',
+                  color: 'var(--muted)', marginBottom: 4,
+                }}
+              >
+                {r.label}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted2)', marginTop: 2 }}>{r.desc}</div>
+            </Link>
           ))}
         </div>
       </section>
-
-      {/* İlgili Araçlar */}
-      <section className="space-y-4">
-        <h2 className="text-xs font-medium uppercase tracking-widest text-[var(--muted)]">{t.relatedTitle}</h2>
-        <div className="flex flex-wrap gap-2">
-          {t.related.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--muted2)] transition-colors hover:border-[var(--teal)]/40 hover:text-[var(--teal)]"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-      </section>
-    </main>
+    </div>
   )
 }
