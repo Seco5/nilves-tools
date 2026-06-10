@@ -1,5 +1,7 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, type CSSProperties } from 'react'
+import Link from 'next/link'
+import { Zap, ShieldCheck, Lock, Plus } from 'lucide-react'
 import { useTT } from '@/lib/toolText'
 import LineNumbers from '@/components/LineNumbers'
 
@@ -30,6 +32,173 @@ const SAMPLE = JSON.stringify({
   roles: ['admin', 'engineer'],
   address: { city: 'London', zip: 'NW1 7TX' },
 })
+
+// ── SEO content ────────────────────────────────────────────────────────────────
+const SEO = {
+  tr: {
+    cards: [
+      { title: 'Anında Formatlama', desc: 'Yapıştır ve anında güzel, okunabilir JSON formatı elde et.' },
+      { title: 'Sözdizim Doğrulama', desc: "Geçersiz JSON'u anında tespit eder, hata satırını gösterir." },
+      { title: 'Gizlilik Önce', desc: 'Verileriniz sunucuya gönderilmez, tamamen tarayıcıda çalışır.' },
+    ],
+    whatTitle: 'JSON Nedir?',
+    what: 'JSON (JavaScript Object Notation), veri alışverişinde kullanılan hafif bir metin formatıdır. İnsan tarafından okunabilir yapısıyla API yanıtlarından yapılandırma dosyalarına kadar her yerde kullanılır. Doğru biçimlendirilmiş bir JSON dosyası hem makineler hem de geliştiriciler tarafından kolayca anlaşılabilir.',
+    howTitle: 'Nasıl Kullanılır?',
+    steps: [
+      "Sol panele ham JSON'unuzu yapıştırın",
+      '"Formatla" butonuna basın veya otomatik formatlama bekleyin',
+      'Sağ panelde renkli, girintili çıktıyı görün',
+      '"Kopyala" butonu ile sonucu panoya kopyalayın',
+      'Küçültmek için "Küçült" butonunu kullanın',
+    ],
+    stepCol: 'Adım',
+    actionCol: 'İşlem',
+    faqTitle: 'Sık Sorulan Sorular',
+    faq: [
+      { q: 'JSON formatlayıcı ne işe yarar?', a: "Girintisiz veya tek satırda yazılmış JSON'u okunabilir, hiyerarşik formata dönüştürür. Aynı zamanda sözdizim hatalarını tespit eder." },
+      { q: 'Verilerim güvende mi?', a: 'Evet. DevOneKit tamamen tarayıcıda çalışır. Yapıştırdığınız veriler hiçbir sunucuya gönderilmez, yalnızca kendi cihazınızda işlenir.' },
+      { q: 'Geçersiz JSON nasıl düzeltilir?', a: 'Formatlayıcı hata mesajında sorunlu satırı ve hatanın açıklamasını gösterir. Yaygın hatalar: eksik tırnak işareti, fazladan virgül, kapanmayan parantez.' },
+      { q: 'JSON minify ne demek?', a: "Minify, JSON'daki tüm boşluk ve satır sonlarını kaldırarak dosyayı küçültür. API isteklerinde bant genişliğini azaltmak için kullanılır." },
+      { q: 'Kaç girinti seçeneği var?', a: '2 boşluk, 4 boşluk ve tab olmak üzere 3 farklı girinti seçeneği mevcuttur. Girinti seçicisinden istediğiniz formatı seçebilirsiniz.' },
+    ],
+    relatedTitle: 'İlgili Araçlar',
+    related: [
+      { label: 'Formatlayıcı', name: 'XML Formatlayıcı', desc: 'XML formatla ve doğrula', href: '/xml-formatter' },
+      { label: 'Dönüştürücü', name: 'CSV ↔ JSON', desc: 'CSV ve JSON arası dönüştür', href: '/csv-json' },
+      { label: 'Formatlayıcı', name: 'SQL Formatlayıcı', desc: 'SQL sorgularını formatla', href: '/sql-formatter' },
+    ],
+  },
+  en: {
+    cards: [
+      { title: 'Instant Formatting', desc: 'Paste and instantly get beautiful, readable JSON format.' },
+      { title: 'Syntax Validation', desc: 'Instantly detects invalid JSON and shows the error line.' },
+      { title: 'Privacy First', desc: 'Your data is never sent to a server, runs entirely in browser.' },
+    ],
+    whatTitle: 'What is JSON?',
+    what: 'JSON (JavaScript Object Notation) is a lightweight text format used for data exchange. With its human-readable structure, it is used everywhere from API responses to configuration files. A properly formatted JSON file can be easily understood by both machines and developers.',
+    howTitle: 'How to Use?',
+    steps: [
+      'Paste your raw JSON into the left panel',
+      'Press the "Format" button or wait for auto-formatting',
+      'See the colored, indented output in the right panel',
+      'Copy the result to clipboard with the "Copy" button',
+      'Use the "Minify" button to compress',
+    ],
+    stepCol: 'Step',
+    actionCol: 'Action',
+    faqTitle: 'Frequently Asked Questions',
+    faq: [
+      { q: 'What does a JSON formatter do?', a: 'It converts unindented or single-line JSON into a readable, hierarchical format. It also detects syntax errors.' },
+      { q: 'Is my data safe?', a: 'Yes. DevOneKit runs entirely in the browser. The data you paste is never sent to any server, it is only processed on your own device.' },
+      { q: 'How to fix invalid JSON?', a: 'The formatter shows the problematic line and error description in the error message. Common errors: missing quotes, trailing commas, unclosed brackets.' },
+      { q: 'What does JSON minify mean?', a: 'Minify removes all spaces and line breaks from JSON to reduce file size. Used to reduce bandwidth in API requests.' },
+      { q: 'How many indent options are there?', a: 'There are 3 indent options: 2 spaces, 4 spaces and tab. You can select your preferred format from the indent selector.' },
+    ],
+    relatedTitle: 'Related Tools',
+    related: [
+      { label: 'Formatter', name: 'XML Formatter', desc: 'Format and validate XML', href: '/xml-formatter' },
+      { label: 'Converter', name: 'CSV ↔ JSON', desc: 'Convert between CSV and JSON', href: '/csv-json' },
+      { label: 'Formatter', name: 'SQL Formatter', desc: 'Format SQL queries', href: '/sql-formatter' },
+    ],
+  },
+} as const
+
+const SEO_ICONS = [Zap, ShieldCheck, Lock]
+
+const seoSectionTitle: CSSProperties = {
+  fontSize: 16, fontWeight: 500, color: 'var(--text)',
+  marginBottom: '.875rem', paddingBottom: '.5rem', borderBottom: '0.5px solid var(--border)',
+}
+
+function FaqItem({ q, a, last }: { q: string; a: string; last: boolean }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ borderBottom: last ? 'none' : '0.5px solid var(--border)' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+          padding: '12px 0', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--text)',
+          background: 'none', border: 'none', textAlign: 'left',
+        }}
+      >
+        <span>{q}</span>
+        <Plus size={16} style={{ flexShrink: 0, marginLeft: 16, color: open ? 'var(--teal)' : 'var(--muted)', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform .2s, color .2s' }} />
+      </button>
+      <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows .25s ease' }}>
+        <div style={{ overflow: 'hidden' }}>
+          <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7, paddingBottom: 12 }}>{a}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SeoContent({ en }: { en: boolean }) {
+  const s = SEO[en ? 'en' : 'tr']
+  return (
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: '2rem 1rem 3rem' }}>
+      {/* INFO CARDS */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: '2rem' }}>
+        {s.cards.map((c, i) => {
+          const Icon = SEO_ICONS[i]
+          return (
+            <div key={i} style={{ background: 'var(--surface2)', borderRadius: 10, padding: '1rem' }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--teal-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '.625rem' }}>
+                <Icon size={16} style={{ color: 'var(--teal)' }} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{c.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted2)', lineHeight: 1.5 }}>{c.desc}</div>
+            </div>
+          )
+        })}
+      </section>
+
+      {/* WHAT IS JSON */}
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={seoSectionTitle}>{s.whatTitle}</h2>
+        <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7 }}>{s.what}</p>
+      </section>
+
+      {/* HOW TO USE */}
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={seoSectionTitle}>{s.howTitle}</h2>
+        <table className="tckn-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr><th>{s.stepCol}</th><th>{s.actionCol}</th></tr>
+          </thead>
+          <tbody>
+            {s.steps.map((step, i) => (
+              <tr key={i}><td className="mono-cell">{i + 1}</td><td>{step}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* FAQ */}
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={seoSectionTitle}>{s.faqTitle}</h2>
+        {s.faq.map((f, i) => (
+          <FaqItem key={i} q={f.q} a={f.a} last={i === s.faq.length - 1} />
+        ))}
+      </section>
+
+      {/* RELATED */}
+      <section>
+        <h2 style={seoSectionTitle}>{s.relatedTitle}</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {s.related.map((r) => (
+            <Link key={r.href} href={r.href} className="tckn-related-card">
+              <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 4 }}>{r.label}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted2)', marginTop: 2 }}>{r.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
 
 export default function JsonFormatter() {
   const { tt, en } = useTT()
@@ -137,6 +306,7 @@ export default function JsonFormatter() {
         <span>{msg}</span>
         <span style={{ marginLeft: 'auto' }}>{stats}</span>
       </div>
+      <SeoContent en={en} />
     </>
   )
 }
