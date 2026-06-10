@@ -144,12 +144,14 @@ export default function TCKNToolClient() {
   const t = T[lang === 'en' ? 'en' : 'tr']
   const [list, setList] = useState<string[]>([generateTCKN()])
   const [count, setCount] = useState(1)
+  const [genKey, setGenKey] = useState(0)
   const { copied, copy } = useCopy()
   const single = list.length === 1
 
   const generate = () => {
     const n = Math.min(Math.max(1, count), 50)
     setList(Array.from({ length: n }, () => generateTCKN()))
+    setGenKey((k) => k + 1)
   }
 
   return (
@@ -168,8 +170,13 @@ export default function TCKNToolClient() {
         {single && (
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-10 text-center">
             <p className="mb-5 text-xs uppercase tracking-widest text-[var(--muted)]">{t.idLabel}</p>
-            <div className="flex items-center justify-center gap-4">
-              <p className="font-mono text-5xl font-bold tabular-nums tracking-[0.2em] text-[#22c55e]">{list[0]}</p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <p
+                key={genKey}
+                className="tckn-flash rounded-xl border border-[var(--border2)] bg-[var(--bg)] px-8 py-6 font-mono text-4xl font-bold tabular-nums tracking-[0.15em] text-[#22c55e] sm:text-5xl"
+              >
+                {list[0]}
+              </p>
               <button
                 onClick={() => copy(list[0], '0')}
                 className="flex items-center gap-2 rounded-xl border border-[var(--border2)] bg-[var(--surface2)] px-4 py-2.5 text-sm font-medium text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"

@@ -233,6 +233,13 @@ body {
   padding: 8px 8px 16px;
 }
 
+/* TCKN number "product output" flash on regenerate */
+@keyframes tckn-flash {
+  0%   { filter: brightness(1.9); }
+  100% { filter: brightness(1); }
+}
+.tckn-flash { animation: tckn-flash .3s ease-out; }
+
 /* Soft, theme-aware scrollbars (replaces the default white track) */
 * {
   scrollbar-width: thin;
