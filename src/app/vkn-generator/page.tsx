@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import ToolClient from './ToolClient'
 
 export const metadata: Metadata = {
-  title: 'VKN Generator — Turkish Tax ID — DevOneKit',
-  description: 'Generate algorithm-valid Turkish Tax Identification Numbers (VKN / Vergi Kimlik Numarası). For testing only.',
-  keywords: ['vkn generator', 'vergi kimlik numarası', 'turkish tax id', 'vkn test'],
+  title: 'VKN Üretici — Vergi Kimlik Numarası Oluştur | DevOneKit',
+  description:
+    'Algoritma geçerli Türkiye Vergi Kimlik Numarası (VKN) üretin. Test ve yazılım geliştirme amaçlıdır. Gerçek mükelleflerle ilgisi yoktur.',
+  keywords: ['vkn üretici', 'vergi kimlik numarası üret', 'vkn generator', 'türkiye vergi no', 'test vkn'],
 }
 
 export default ToolClient
