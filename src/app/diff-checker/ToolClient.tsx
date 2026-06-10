@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
@@ -94,7 +95,7 @@ function renderCell(cell: Cell, side: 'left'|'right') {
   return `<div class="dc-cell ${side} ${cell.type}"><span class="dc-num">${cell.num}</span><span class="dc-code">${cell.html || ' '}</span></div>`
 }
 
-function renderRows(rows: Row[], showCtx: boolean): string {
+function renderRows(rows: Row[], showCtx: boolean, en: boolean): string {
   const CTX = 3, n = rows.length
   const show = new Array(n).fill(showCtx)
   if (!showCtx) {
@@ -105,16 +106,16 @@ function renderRows(rows: Row[], showCtx: boolean): string {
   let html = '', last = -1
   rows.forEach((r, i) => {
     if (!show[i]) return
-    if (last >= 0 && i-last > 1) html += `<div class="dc-sep">⋯ ${i-last-1} unchanged lines hidden ⋯</div>`
+    if (last >= 0 && i-last > 1) html += `<div class="dc-sep">⋯ ${i-last-1} ${en ? 'unchanged lines hidden' : 'değişmeyen satır gizlendi'} ⋯</div>`
     last = i
     html += `<div class="dc-row">${renderCell(r.left,'left')}${renderCell(r.right,'right')}</div>`
   })
-  if (!html) html = '<div class="dc-identical">No differences — the two texts are identical</div>'
+  if (!html) html = `<div class="dc-identical">${en ? 'No differences — the two texts are identical' : 'Fark yok — iki metin birebir aynı'}</div>`
   return html
 }
 
 /* ─── Explain summary ─────────────────────────────────────────── */
-function buildExplain(diff: DiffLine[]): string {
+function buildExplain(diff: DiffLine[], en: boolean): string {
   const dels = diff.filter(d => d.t === 'del')
   const adds = diff.filter(d => d.t === 'add')
   const same = diff.filter(d => d.t === 'same')
@@ -122,38 +123,41 @@ function buildExplain(diff: DiffLine[]): string {
   const modLines  = adds.length + same.length
 
   if (dels.length === 0 && adds.length === 0)
-    return 'The two texts are identical — no differences were found.'
+    return en ? 'The two texts are identical — no differences were found.' : 'İki metin birebir aynı — hiçbir fark bulunamadı.'
 
   const parts: string[] = []
-  parts.push(`The original has ${origLines} line${origLines !== 1 ? 's' : ''} and the modified version has ${modLines} line${modLines !== 1 ? 's' : ''}.`)
+  parts.push(en
+    ? `The original has ${origLines} line${origLines !== 1 ? 's' : ''} and the modified version has ${modLines} line${modLines !== 1 ? 's' : ''}.`
+    : `Orijinal ${origLines} satır, değiştirilmiş sürüm ${modLines} satır içeriyor.`)
 
   const bullets: string[] = []
-  if (dels.length) bullets.push(`${dels.length} line${dels.length !== 1 ? 's' : ''} removed from the original`)
-  if (adds.length) bullets.push(`${adds.length} line${adds.length !== 1 ? 's' : ''} added in the modified version`)
-  if (same.length) bullets.push(`${same.length} line${same.length !== 1 ? 's' : ''} unchanged`)
+  if (dels.length) bullets.push(en ? `${dels.length} line${dels.length !== 1 ? 's' : ''} removed from the original` : `Orijinalden ${dels.length} satır çıkarıldı`)
+  if (adds.length) bullets.push(en ? `${adds.length} line${adds.length !== 1 ? 's' : ''} added in the modified version` : `Değiştirilmiş sürüme ${adds.length} satır eklendi`)
+  if (same.length) bullets.push(en ? `${same.length} line${same.length !== 1 ? 's' : ''} unchanged` : `${same.length} satır değişmedi`)
 
   parts.push(bullets.join(' • '))
 
-  // Describe small diffs in detail
   if (dels.length <= 3 && adds.length <= 3 && dels.length > 0) {
     const examples = dels.slice(0, 2).map(d => `"${d.s.trim().slice(0, 60)}${d.s.length > 60 ? '…' : ''}"`)
-    parts.push(`Removed line${examples.length > 1 ? 's' : ''}: ${examples.join(', ')}`)
+    parts.push((en ? `Removed line${examples.length > 1 ? 's' : ''}: ` : 'Çıkarılan satır(lar): ') + examples.join(', '))
   }
   if (adds.length <= 3 && adds.length > 0) {
     const examples = adds.slice(0, 2).map(d => `"${d.s.trim().slice(0, 60)}${d.s.length > 60 ? '…' : ''}"`)
-    parts.push(`Added line${examples.length > 1 ? 's' : ''}: ${examples.join(', ')}`)
+    parts.push((en ? `Added line${examples.length > 1 ? 's' : ''}: ` : 'Eklenen satır(lar): ') + examples.join(', '))
   }
 
   return parts.join('\n\n')
 }
 
 export default function DiffChecker() {
+  const { en } = useTT()
+  const pasteMsg = en ? 'Paste text in both panels' : 'Her iki panele de metin yapıştırın'
   const [a, setA] = useState('')
   const [b, setB] = useState('')
   const [showCtx, setShowCtx] = useState(true)
   const [chip, setChip] = useState<'idle'|'ok'|'err'>('idle')
-  const [chipTxt, setChipTxt] = useState('IDLE')
-  const [msg, setMsg] = useState('Paste text in both panels')
+  const [chipTxt, setChipTxt] = useState<string>(en ? 'IDLE' : 'BEKLEMEDE')
+  const [msg, setMsg] = useState<string>(pasteMsg)
   const [bodyHtml, setBodyHtml] = useState('')
   const [adds, setAdds] = useState(0)
   const [dels, setDels] = useState(0)
@@ -177,18 +181,18 @@ export default function DiffChecker() {
   }, [])
 
   const runDiff = (av: string, bv: string, showAll: boolean) => {
-    if (!av && !bv) { setShow(false); setChip('idle'); setChipTxt('IDLE'); setMsg('Paste text in both panels'); setShowExplain(false); return }
+    if (!av && !bv) { setShow(false); setChip('idle'); setChipTxt(en ? 'IDLE' : 'BEKLEMEDE'); setMsg(pasteMsg); setShowExplain(false); return }
     setShow(true)
     const diff = lcsLines(av.split('\n'), bv.split('\n'))
     const rows = buildRows(diff)
-    setBodyHtml(renderRows(rows, showAll))
+    setBodyHtml(renderRows(rows, showAll, en))
     const nAdd = diff.filter(d => d.t === 'add').length
     const nDel = diff.filter(d => d.t === 'del').length
     setAdds(nAdd); setDels(nDel)
     setChip(nAdd || nDel ? 'err' : 'ok')
-    setChipTxt(nAdd || nDel ? 'CHANGES' : 'IDENTICAL')
-    setMsg(nAdd || nDel ? `${nAdd + nDel} changed lines` : 'Files are identical')
-    setExplainText(buildExplain(diff))
+    setChipTxt(nAdd || nDel ? (en ? 'CHANGES' : 'DEĞİŞİKLİK') : (en ? 'IDENTICAL' : 'AYNI'))
+    setMsg(nAdd || nDel ? `${nAdd + nDel} ${en ? 'changed lines' : 'değişen satır'}` : (en ? 'Files are identical' : 'Dosyalar birebir aynı'))
+    setExplainText(buildExplain(diff, en))
     return diff
   }
 
@@ -196,11 +200,11 @@ export default function DiffChecker() {
   const handleB = (v: string) => { setB(v); runDiff(a, v, showCtx) }
   const toggleCtx = () => { const c = !showCtx; setShowCtx(c); runDiff(a, b, c) }
   const swap = () => { setA(b); setB(a); runDiff(b, a, showCtx) }
-  const clearAll = () => { setA(''); setB(''); setShow(false); setShowExplain(false); setChip('idle'); setChipTxt('IDLE'); setMsg('Paste text in both panels') }
+  const clearAll = () => { setA(''); setB(''); setShow(false); setShowExplain(false); setChip('idle'); setChipTxt(en ? 'IDLE' : 'BEKLEMEDE'); setMsg(pasteMsg) }
 
   const copyText = (txt: string, label: string) => {
     if (!txt) return
-    navigator.clipboard.writeText(txt).then(() => toast(`${label} copied`))
+    navigator.clipboard.writeText(txt).then(() => toast(en ? `${label} copied` : 'Kopyalandı'))
   }
 
   const exportPatch = () => {
@@ -275,7 +279,7 @@ export default function DiffChecker() {
       const pb = btoa(encodeURIComponent(b))
       const url = `${window.location.origin}${window.location.pathname}?a=${pa}&b=${pb}`
       if (url.length > 8000) { toast('Texts too large to share via URL'); return }
-      navigator.clipboard.writeText(url).then(() => toast('Share link copied!'))
+      navigator.clipboard.writeText(url).then(() => toast(en ? 'Share link copied!' : 'Paylaşım bağlantısı kopyalandı!'))
     } catch { toast('Failed to generate share link') }
   }
 
@@ -285,23 +289,23 @@ export default function DiffChecker() {
       <div className="split" style={{ flex: '0 0 42%', minHeight: 0 }}>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Original</span>
+            <span className="pane-label">{en ? 'Original' : 'Orijinal'}</span>
             <div className="btn-group">
-              <button className="btn" onClick={() => copyText(a, 'Original')}>copy</button>
-              <button className="btn" onClick={() => handleA('')}>clear</button>
+              <button className="btn" onClick={() => copyText(a, 'Original')}>{en ? 'copy' : 'kopyala'}</button>
+              <button className="btn" onClick={() => handleA('')}>{en ? 'clear' : 'temizle'}</button>
             </div>
           </div>
-          <textarea value={a} onChange={e => handleA(e.target.value)} placeholder="Paste original text…" spellCheck={false} />
+          <textarea value={a} onChange={e => handleA(e.target.value)} placeholder={en ? 'Paste original text…' : 'Orijinal metni yapıştırın…'} spellCheck={false} />
         </div>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Modified</span>
+            <span className="pane-label">{en ? 'Modified' : 'Değiştirilmiş'}</span>
             <div className="btn-group">
-              <button className="btn" onClick={() => copyText(b, 'Modified')}>copy</button>
-              <button className="btn" onClick={() => handleB('')}>clear</button>
+              <button className="btn" onClick={() => copyText(b, 'Modified')}>{en ? 'copy' : 'kopyala'}</button>
+              <button className="btn" onClick={() => handleB('')}>{en ? 'clear' : 'temizle'}</button>
             </div>
           </div>
-          <textarea value={b} onChange={e => handleB(e.target.value)} placeholder="Paste modified text…" spellCheck={false} />
+          <textarea value={b} onChange={e => handleB(e.target.value)} placeholder={en ? 'Paste modified text…' : 'Değiştirilmiş metni yapıştırın…'} spellCheck={false} />
         </div>
       </div>
 
@@ -310,24 +314,24 @@ export default function DiffChecker() {
         {/* Rich toolbar */}
         <div className="dc-toolbar">
           <div className="dc-side">
-            <span className="dc-rm">⊖ {dels} removal{dels === 1 ? '' : 's'}</span>
+            <span className="dc-rm">⊖ {dels} {en ? `removal${dels === 1 ? '' : 's'}` : 'çıkarma'}</span>
           </div>
-          <button className="dc-swap" title="Swap sides" onClick={swap}>⇄</button>
+          <button className="dc-swap" title={en ? 'Swap sides' : 'Tarafları değiştir'} onClick={swap}>⇄</button>
           <div className="dc-side right">
-            <span className="dc-ad">⊕ {adds} addition{adds === 1 ? '' : 's'}</span>
+            <span className="dc-ad">⊕ {adds} {en ? `addition${adds === 1 ? '' : 's'}` : 'ekleme'}</span>
           </div>
           <div className="btn-group">
-            <button className="btn" onClick={toggleCtx}>{showCtx ? 'hide unchanged' : 'show all'}</button>
-            <button className="btn" onClick={() => copyText(b, 'Modified')}>copy result</button>
-            <button className="btn" onClick={exportPatch}>export .diff</button>
-            <button className="btn" onClick={exportPdf}>export PDF</button>
-            <button className="btn" onClick={shareUrl} title="Copy shareable link">share</button>
+            <button className="btn" onClick={toggleCtx}>{showCtx ? (en ? 'hide unchanged' : 'değişmeyeni gizle') : (en ? 'show all' : 'tümünü göster')}</button>
+            <button className="btn" onClick={() => copyText(b, 'Modified')}>{en ? 'copy result' : 'sonucu kopyala'}</button>
+            <button className="btn" onClick={exportPatch}>{en ? 'export .diff' : '.diff indir'}</button>
+            <button className="btn" onClick={exportPdf}>{en ? 'export PDF' : 'PDF indir'}</button>
+            <button className="btn" onClick={shareUrl} title={en ? 'Copy shareable link' : 'Paylaşılabilir bağlantıyı kopyala'}>{en ? 'share' : 'paylaş'}</button>
             <button
               className={`btn${showExplain ? ' primary' : ''}`}
               onClick={() => setShowExplain(v => !v)}
-              title="Explain the differences"
-            >explain</button>
-            <button className="btn" onClick={clearAll}>clear all</button>
+              title={en ? 'Explain the differences' : 'Farkları açıkla'}
+            >{en ? 'explain' : 'açıkla'}</button>
+            <button className="btn" onClick={clearAll}>{en ? 'clear all' : 'tümünü temizle'}</button>
           </div>
         </div>
 
@@ -335,7 +339,7 @@ export default function DiffChecker() {
         {showExplain && (
           <div className="dc-explain">
             <div className="dc-explain-hdr">
-              <span>✦ Explain</span>
+              <span>✦ {en ? 'Explain' : 'Açıklama'}</span>
               <button className="dc-explain-close" onClick={() => setShowExplain(false)}>✕</button>
             </div>
             <div className="dc-explain-body">

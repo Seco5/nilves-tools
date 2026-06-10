@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx'
 import BarcodeSvg from './BarcodeSvg'
 import { BarcodeFormat, validateBarcode, analyzeEan13 } from './barcode-utils'
 import { barcodeToCanvas, canvasToPngBlob, downloadBlob } from './bq-render'
+import { useTT } from '@/lib/toolText'
 
 const BULK_FORMATS: BarcodeFormat[] = ['EAN-13', 'EAN-8', 'UPC-A', 'Code128', 'ITF-14']
 const MAX = 200
@@ -23,6 +24,10 @@ function toast(m: string) {
 }
 
 export default function EcommerceTab() {
+  const { en } = useTT()
+  const E = en
+    ? { bulkTitle: 'Bulk Barcode Generator', manual: 'Manual Entry', csv: 'CSV Upload', useValueLabel: '(use "value,label" per line)', rows: 'rows', dragDrop: 'Drag & drop a CSV, or click to browse', moreRows: (n: number) => `More than ${n} rows — only the first ${n} will be generated.`, moreRows2: 'more rows', format: 'Format', labelSize: 'Label size', custom: 'Custom', widthMm: 'Width (mm)', heightMm: 'Height (mm)', showName: 'Show product name below barcode', genBtn: 'Generate Barcodes', previewExport: 'Preview & Export', generated: 'generated', invalidSkipped: 'invalid skipped', emptyGrid: 'Generate barcodes to preview them here', dlZip: 'Download All as ZIP', dlPdf: 'Download PDF Sheet', dlExcel: 'Export to Excel', eanValidator: 'EAN-13 Validator', eanPh: '13-digit EAN', valid: 'Valid', checkIs: (c: string) => ` — check digit is ${c}`, invalidCheck: (c: string) => `Invalid — correct check digit is ${c}`, countryPrefix: 'Country prefix', manufacturer: 'Manufacturer', product: 'Product', checkDigit: 'Check digit' }
+    : { bulkTitle: 'Toplu Barkod Üretici', manual: 'Elle Giriş', csv: 'CSV Yükle', useValueLabel: '(her satırda "değer,etiket" kullanın)', rows: 'satır', dragDrop: 'CSV sürükleyip bırakın veya tıklayıp seçin', moreRows: (n: number) => `${n} satırdan fazla — yalnızca ilk ${n} tanesi üretilecek.`, moreRows2: 'satır daha', format: 'Biçim', labelSize: 'Etiket boyutu', custom: 'Özel', widthMm: 'Genişlik (mm)', heightMm: 'Yükseklik (mm)', showName: 'Barkodun altında ürün adını göster', genBtn: 'Barkod Üret', previewExport: 'Önizleme & Dışa Aktar', generated: 'üretildi', invalidSkipped: 'geçersiz atlandı', emptyGrid: 'Önizlemek için barkod üretin', dlZip: 'Tümünü ZIP indir', dlPdf: 'PDF Sayfası indir', dlExcel: "Excel'e Aktar", eanValidator: 'EAN-13 Doğrulayıcı', eanPh: '13 haneli EAN', valid: 'Geçerli', checkIs: (c: string) => ` — kontrol hanesi ${c}`, invalidCheck: (c: string) => `Geçersiz — doğru kontrol hanesi ${c}`, countryPrefix: 'Ülke ön eki', manufacturer: 'Üretici', product: 'Ürün', checkDigit: 'Kontrol hanesi' }
   const [method, setMethod] = useState<'manual' | 'csv'>('manual')
   const [manual, setManual] = useState('8691234567890\n869987654321\n978014300723')
   const [csvRows, setCsvRows] = useState<string[][]>([])
@@ -84,7 +89,7 @@ export default function EcommerceTab() {
       return { value, label, valid: v.ok, error: v.error }
     })
     setGenerated(out)
-    toast(`${out.filter(g => g.valid).length} generated`)
+    toast(`${out.filter(g => g.valid).length} ${E.generated}`)
   }
 
   const valids = generated.filter(g => g.valid)
@@ -149,75 +154,75 @@ export default function EcommerceTab() {
       <div className="bq-ecom-top">
         {/* A — generator */}
         <div className="bq-ecard">
-          <div className="bq-section-title">Bulk Barcode Generator</div>
+          <div className="bq-section-title">{E.bulkTitle}</div>
 
           <div className="bq-pills" style={{ marginBottom: 10 }}>
-            <button className={`bq-pill${method === 'manual' ? ' active' : ''}`} onClick={() => setMethod('manual')}>Manual Entry</button>
-            <button className={`bq-pill${method === 'csv' ? ' active' : ''}`} onClick={() => setMethod('csv')}>CSV Upload</button>
+            <button className={`bq-pill${method === 'manual' ? ' active' : ''}`} onClick={() => setMethod('manual')}>{E.manual}</button>
+            <button className={`bq-pill${method === 'csv' ? ' active' : ''}`} onClick={() => setMethod('csv')}>{E.csv}</button>
           </div>
 
           {method === 'manual' ? (
             <textarea className="tool-textarea" style={{ height: 120 }} value={manual} onChange={e => setManual(e.target.value)}
-              placeholder={'123456789012\n987654321098\n…' + (showName ? '\n(use "value,label" per line)' : '')} />
+              placeholder={'123456789012\n987654321098\n…' + (showName ? '\n' + E.useValueLabel : '')} />
           ) : (
             <div>
               <div className="bq-drop" onDragOver={e => e.preventDefault()} onDrop={onDrop} onClick={() => fileRef.current?.click()}>
                 <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={e => { const f = e.target.files?.[0]; if (f) parseCsv(f) }} />
-                {csvName ? <span>{csvName} · {csvRows.length} rows</span> : <span>Drag &amp; drop a CSV, or click to browse</span>}
+                {csvName ? <span>{csvName} · {csvRows.length} {E.rows}</span> : <span>{E.dragDrop}</span>}
               </div>
-              {overflow && <div className="bq-inline-err">⚠ More than {MAX} rows — only the first {MAX} will be generated.</div>}
+              {overflow && <div className="bq-inline-err">⚠ {E.moreRows(MAX)}</div>}
               {csvRows.length > 0 && (
                 <div className="bq-csvprev">
                   {csvRows.slice(0, 5).map((r, i) => (
                     <div key={i} className="bq-csvrow"><span className="bq-csvcell">{r[0]}</span>{showName && <span className="bq-csvcell dim">{r[1] || ''}</span>}</div>
                   ))}
-                  {csvRows.length > 5 && <div className="bq-csvmore">+{csvRows.length - 5} more rows</div>}
+                  {csvRows.length > 5 && <div className="bq-csvmore">+{csvRows.length - 5} {E.moreRows2}</div>}
                 </div>
               )}
             </div>
           )}
 
           <div className="bq-field" style={{ marginTop: 10 }}>
-            <span className="bq-flabel">Format</span>
+            <span className="bq-flabel">{E.format}</span>
             <div className="bq-pills">
               {BULK_FORMATS.map(f => <button key={f} className={`bq-pill sm${format === f ? ' active' : ''}`} onClick={() => setFormat(f)}>{f}</button>)}
             </div>
           </div>
 
           <div className="bq-field">
-            <span className="bq-flabel">Label size</span>
+            <span className="bq-flabel">{E.labelSize}</span>
             <div className="bq-pills">
               {(['30x20', '50x30', '100x60', 'custom'] as LabelSize[]).map(s => (
                 <button key={s} className={`bq-pill sm${labelSize === s ? ' active' : ''}`} onClick={() => setLabelSize(s)}>
-                  {s === '30x20' ? '30×20' : s === '50x30' ? '50×30' : s === '100x60' ? '100×60' : 'Custom'}
+                  {s === '30x20' ? '30×20' : s === '50x30' ? '50×30' : s === '100x60' ? '100×60' : E.custom}
                 </button>
               ))}
             </div>
           </div>
           {labelSize === 'custom' && (
             <div className="bq-row3">
-              <label className="bq-field"><span className="bq-flabel">Width (mm)</span><input type="number" className="tool-input" value={customW} min={10} onChange={e => setCustomW(+e.target.value)} /></label>
-              <label className="bq-field"><span className="bq-flabel">Height (mm)</span><input type="number" className="tool-input" value={customH} min={10} onChange={e => setCustomH(+e.target.value)} /></label>
+              <label className="bq-field"><span className="bq-flabel">{E.widthMm}</span><input type="number" className="tool-input" value={customW} min={10} onChange={e => setCustomW(+e.target.value)} /></label>
+              <label className="bq-field"><span className="bq-flabel">{E.heightMm}</span><input type="number" className="tool-input" value={customH} min={10} onChange={e => setCustomH(+e.target.value)} /></label>
             </div>
           )}
 
           <label className="bq-check" style={{ margin: '6px 0 12px' }}>
-            <input type="checkbox" checked={showName} onChange={e => setShowName(e.target.checked)} /> Show product name below barcode
+            <input type="checkbox" checked={showName} onChange={e => setShowName(e.target.checked)} /> {E.showName}
           </label>
 
-          <button className="pp-btn primary" style={{ width: '100%' }} onClick={generate}>Generate Barcodes</button>
+          <button className="pp-btn primary" style={{ width: '100%' }} onClick={generate}>{E.genBtn}</button>
         </div>
 
         {/* B — preview grid */}
         <div className="bq-ecard">
-          <div className="bq-section-title">Preview &amp; Export</div>
+          <div className="bq-section-title">{E.previewExport}</div>
           <div className="bq-statsbar">
-            <span className="chip chip-ok">{valids.length} generated</span>
-            {invalidCount > 0 && <span className="chip chip-err">{invalidCount} invalid skipped</span>}
+            <span className="chip chip-ok">{valids.length} {E.generated}</span>
+            {invalidCount > 0 && <span className="chip chip-err">{invalidCount} {E.invalidSkipped}</span>}
           </div>
 
           {valids.length === 0 ? (
-            <div className="bq-empty-grid">Generate barcodes to preview them here</div>
+            <div className="bq-empty-grid">{E.emptyGrid}</div>
           ) : (
             <div className="bq-grid">
               {valids.map((g, i) => (
@@ -233,9 +238,9 @@ export default function EcommerceTab() {
 
           {valids.length > 0 && (
             <div className="bq-bulkbtns">
-              <button className="btn" onClick={dlZip}>Download All as ZIP</button>
-              <button className="btn" onClick={dlPdf}>Download PDF Sheet</button>
-              <button className="btn" onClick={dlExcel}>Export to Excel</button>
+              <button className="btn" onClick={dlZip}>{E.dlZip}</button>
+              <button className="btn" onClick={dlPdf}>{E.dlPdf}</button>
+              <button className="btn" onClick={dlExcel}>{E.dlExcel}</button>
             </div>
           )}
         </div>
@@ -243,25 +248,25 @@ export default function EcommerceTab() {
 
       {/* SECTION C — EAN-13 validator */}
       <div className="bq-ecard">
-        <div className="bq-section-title">EAN-13 Validator</div>
+        <div className="bq-section-title">{E.eanValidator}</div>
         <div className="bq-eanval">
           <input className="tool-input" style={{ maxWidth: 260, fontFamily: 'var(--mono)' }} value={eanInput}
-            onChange={e => setEanInput(e.target.value.replace(/\s/g, ''))} placeholder="13-digit EAN" maxLength={13} />
+            onChange={e => setEanInput(e.target.value.replace(/\s/g, ''))} placeholder={E.eanPh} maxLength={13} />
           {'reason' in ean ? (
             <span className="bq-eanmsg muted">{ean.reason}</span>
           ) : ean.valid ? (
-            <span className="bq-eanmsg ok">✓ Valid{ean.hasCheck ? '' : ` — check digit is ${ean.expected}`}</span>
+            <span className="bq-eanmsg ok">✓ {E.valid}{ean.hasCheck ? '' : E.checkIs(String(ean.expected))}</span>
           ) : (
-            <span className="bq-eanmsg bad">✗ Invalid — correct check digit is {ean.expected}</span>
+            <span className="bq-eanmsg bad">✗ {E.invalidCheck(String(ean.expected))}</span>
           )}
         </div>
 
         {!('reason' in ean) && (
           <div className="bq-breakdown">
-            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--teal2)' }}>{ean.countryPrefix}</span><span className="bq-bdl">Country prefix<br />{ean.country}</span></div>
-            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--blue)' }}>{ean.manufacturer}</span><span className="bq-bdl">Manufacturer</span></div>
-            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--purple)' }}>{ean.product}</span><span className="bq-bdl">Product</span></div>
-            <div className="bq-bd"><span className="bq-bdv" style={{ color: ean.valid ? 'var(--add-text)' : 'var(--red)' }}>{ean.hasCheck ? ean.check : ean.expected}</span><span className="bq-bdl">Check digit</span></div>
+            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--teal2)' }}>{ean.countryPrefix}</span><span className="bq-bdl">{E.countryPrefix}<br />{ean.country}</span></div>
+            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--blue)' }}>{ean.manufacturer}</span><span className="bq-bdl">{E.manufacturer}</span></div>
+            <div className="bq-bd"><span className="bq-bdv" style={{ color: 'var(--purple)' }}>{ean.product}</span><span className="bq-bdl">{E.product}</span></div>
+            <div className="bq-bd"><span className="bq-bdv" style={{ color: ean.valid ? 'var(--add-text)' : 'var(--red)' }}>{ean.hasCheck ? ean.check : ean.expected}</span><span className="bq-bdl">{E.checkDigit}</span></div>
           </div>
         )}
       </div>

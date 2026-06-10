@@ -7,6 +7,7 @@ import {
   buildVCard, buildWifi, buildEmail, buildSms,
 } from './barcode-utils'
 import { barcodeToCanvas, canvasToPngBlob, downloadBlob, downloadText, svgElToString } from './bq-render'
+import { useTT } from '@/lib/toolText'
 
 type QrType = 'URL' | 'Text' | 'vCard' | 'WiFi' | 'Email' | 'SMS'
 const QR_TYPES: QrType[] = ['URL', 'Text', 'vCard', 'WiFi', 'Email', 'SMS']
@@ -19,6 +20,10 @@ function toast(m: string) {
 }
 
 export default function DeveloperTab() {
+  const { en } = useTT()
+  const D = en
+    ? { text: 'Text', firstName: 'First name', lastName: 'Last name', phone: 'Phone', email: 'Email', company: 'Company', website: 'Website', network: 'Network (SSID)', password: 'Password', security: 'Security', none: 'None', to: 'To', subject: 'Subject', body: 'Body', phoneNo: 'Phone number', message: 'Message', size: 'Size', fg: 'Foreground', bg: 'Background', ec: 'Error correction', format: 'Format', value: 'Value', height: 'Height', width: 'Width', showText: 'Show text', qrPreview: 'QR Preview', barPreview: 'Barcode Preview', enterContent: 'Enter content…', fixValue: 'Fix the value to preview', dlPng: 'Download PNG', dlSvg: 'Download SVG', copyPng: 'Copy PNG', anyText: 'Any text…', qrCopied: 'QR copied', copyUnsup: 'Copy not supported' }
+    : { text: 'Metin', firstName: 'Ad', lastName: 'Soyad', phone: 'Telefon', email: 'E-posta', company: 'Şirket', website: 'Web sitesi', network: 'Ağ (SSID)', password: 'Şifre', security: 'Güvenlik', none: 'Yok', to: 'Kime', subject: 'Konu', body: 'İçerik', phoneNo: 'Telefon numarası', message: 'Mesaj', size: 'Boyut', fg: 'Ön plan', bg: 'Arka plan', ec: 'Hata düzeltme', format: 'Biçim', value: 'Değer', height: 'Yükseklik', width: 'Genişlik', showText: 'Metni göster', qrPreview: 'QR Önizleme', barPreview: 'Barkod Önizleme', enterContent: 'İçerik girin…', fixValue: 'Önizleme için değeri düzeltin', dlPng: 'PNG indir', dlSvg: 'SVG indir', copyPng: 'PNG kopyala', anyText: 'Herhangi bir metin…', qrCopied: 'QR kopyalandı', copyUnsup: 'Kopyalama desteklenmiyor' }
   /* QR state */
   const [qrType, setQrType] = useState<QrType>('URL')
   const [url, setUrl] = useState('https://devonekit.com')
@@ -85,8 +90,8 @@ export default function DeveloperTab() {
     if (!canvas) return
     canvas.toBlob(async b => {
       if (!b) return
-      try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('QR copied') }
-      catch { toast('Copy not supported') }
+      try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast(D.qrCopied) }
+      catch { toast(D.copyUnsup) }
     }, 'image/png')
   }
 
@@ -123,50 +128,50 @@ export default function DeveloperTab() {
           {qrType === 'URL' && field('URL', (
             <input className={`tool-input${urlInvalid ? ' bq-bad' : ''}`} value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" />
           ))}
-          {qrType === 'Text' && field('Text', (
-            <textarea className="tool-textarea" style={{ height: 70 }} value={text} onChange={e => setText(e.target.value)} placeholder="Any text…" />
+          {qrType === 'Text' && field(D.text, (
+            <textarea className="tool-textarea" style={{ height: 70 }} value={text} onChange={e => setText(e.target.value)} placeholder={D.anyText} />
           ))}
           {qrType === 'vCard' && (
             <div className="bq-grid2">
-              {field('First name', <input className="tool-input" value={vc.first} onChange={e => setVc({ ...vc, first: e.target.value })} />)}
-              {field('Last name', <input className="tool-input" value={vc.last} onChange={e => setVc({ ...vc, last: e.target.value })} />)}
-              {field('Phone', <input className="tool-input" value={vc.phone} onChange={e => setVc({ ...vc, phone: e.target.value })} />)}
-              {field('Email', <input className="tool-input" value={vc.email} onChange={e => setVc({ ...vc, email: e.target.value })} />)}
-              {field('Company', <input className="tool-input" value={vc.company} onChange={e => setVc({ ...vc, company: e.target.value })} />)}
-              {field('Website', <input className="tool-input" value={vc.website} onChange={e => setVc({ ...vc, website: e.target.value })} />)}
+              {field(D.firstName, <input className="tool-input" value={vc.first} onChange={e => setVc({ ...vc, first: e.target.value })} />)}
+              {field(D.lastName, <input className="tool-input" value={vc.last} onChange={e => setVc({ ...vc, last: e.target.value })} />)}
+              {field(D.phone, <input className="tool-input" value={vc.phone} onChange={e => setVc({ ...vc, phone: e.target.value })} />)}
+              {field(D.email, <input className="tool-input" value={vc.email} onChange={e => setVc({ ...vc, email: e.target.value })} />)}
+              {field(D.company, <input className="tool-input" value={vc.company} onChange={e => setVc({ ...vc, company: e.target.value })} />)}
+              {field(D.website, <input className="tool-input" value={vc.website} onChange={e => setVc({ ...vc, website: e.target.value })} />)}
             </div>
           )}
           {qrType === 'WiFi' && (
             <div className="bq-grid2">
-              {field('Network (SSID)', <input className="tool-input" value={wifi.ssid} onChange={e => setWifi({ ...wifi, ssid: e.target.value })} />)}
-              {field('Password', <input className="tool-input" value={wifi.password} onChange={e => setWifi({ ...wifi, password: e.target.value })} disabled={wifi.security === 'None'} />)}
-              {field('Security', (
+              {field(D.network, <input className="tool-input" value={wifi.ssid} onChange={e => setWifi({ ...wifi, ssid: e.target.value })} />)}
+              {field(D.password, <input className="tool-input" value={wifi.password} onChange={e => setWifi({ ...wifi, password: e.target.value })} disabled={wifi.security === 'None'} />)}
+              {field(D.security, (
                 <select className="tool-input" value={wifi.security} onChange={e => setWifi({ ...wifi, security: e.target.value as 'WPA' | 'WEP' | 'None' })}>
-                  <option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="None">None</option>
+                  <option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="None">{D.none}</option>
                 </select>
               ))}
             </div>
           )}
           {qrType === 'Email' && (
             <div className="bq-grid2">
-              {field('To', <input className="tool-input" value={email.to} onChange={e => setEmail({ ...email, to: e.target.value })} />)}
-              {field('Subject', <input className="tool-input" value={email.subject} onChange={e => setEmail({ ...email, subject: e.target.value })} />)}
-              <div style={{ gridColumn: '1 / -1' }}>{field('Body', <textarea className="tool-textarea" style={{ height: 60 }} value={email.body} onChange={e => setEmail({ ...email, body: e.target.value })} />)}</div>
+              {field(D.to, <input className="tool-input" value={email.to} onChange={e => setEmail({ ...email, to: e.target.value })} />)}
+              {field(D.subject, <input className="tool-input" value={email.subject} onChange={e => setEmail({ ...email, subject: e.target.value })} />)}
+              <div style={{ gridColumn: '1 / -1' }}>{field(D.body, <textarea className="tool-textarea" style={{ height: 60 }} value={email.body} onChange={e => setEmail({ ...email, body: e.target.value })} />)}</div>
             </div>
           )}
           {qrType === 'SMS' && (
             <div className="bq-grid2">
-              {field('Phone number', <input className="tool-input" value={sms.phone} onChange={e => setSms({ ...sms, phone: e.target.value })} />)}
-              {field('Message', <input className="tool-input" value={sms.message} onChange={e => setSms({ ...sms, message: e.target.value })} />)}
+              {field(D.phoneNo, <input className="tool-input" value={sms.phone} onChange={e => setSms({ ...sms, phone: e.target.value })} />)}
+              {field(D.message, <input className="tool-input" value={sms.message} onChange={e => setSms({ ...sms, message: e.target.value })} />)}
             </div>
           )}
 
           <div className="bq-row3">
-            {field(`Size — ${qrSize}px`, <input type="range" min={128} max={512} step={8} value={qrSize} onChange={e => setQrSize(+e.target.value)} />)}
-            {field('Foreground', <input type="color" className="bq-color" value={qrFg} onChange={e => setQrFg(e.target.value)} />)}
-            {field('Background', <input type="color" className="bq-color" value={qrBg} onChange={e => setQrBg(e.target.value)} />)}
+            {field(`${D.size} — ${qrSize}px`, <input type="range" min={128} max={512} step={8} value={qrSize} onChange={e => setQrSize(+e.target.value)} />)}
+            {field(D.fg, <input type="color" className="bq-color" value={qrFg} onChange={e => setQrFg(e.target.value)} />)}
+            {field(D.bg, <input type="color" className="bq-color" value={qrBg} onChange={e => setQrBg(e.target.value)} />)}
           </div>
-          {field('Error correction', (
+          {field(D.ec, (
             <div className="bq-pills">
               {EC_LEVELS.map(l => <button key={l} className={`bq-pill sm${qrEC === l ? ' active' : ''}`} onClick={() => setQrEC(l)}>{l}</button>)}
             </div>
@@ -177,51 +182,51 @@ export default function DeveloperTab() {
 
         {/* Barcode section */}
         <div className="bq-section-title">Barcode</div>
-        {field('Format', (
+        {field(D.format, (
           <div className="bq-pills">
             {BAR_FORMATS.map(f => <button key={f} className={`bq-pill sm${barFormat === f ? ' active' : ''}`} onClick={() => setBarFormat(f)}>{f}</button>)}
           </div>
         ))}
-        {field('Value', (
+        {field(D.value, (
           <input className={`tool-input${!barErr.ok ? ' bq-bad' : ''}`} value={barValue} onChange={e => setBarValue(e.target.value)} placeholder={FORMAT_PLACEHOLDER[barFormat]} />
         ))}
         {!barErr.ok && <div className="bq-inline-err">⚠ {barErr.error}</div>}
         <div className="bq-row3">
-          {field(`Height — ${barHeight}px`, <input type="range" min={40} max={120} value={barHeight} onChange={e => setBarHeight(+e.target.value)} />)}
-          {field(`Width — ${barWidth}x`, <input type="range" min={1} max={3} step={1} value={barWidth} onChange={e => setBarWidth(+e.target.value)} />)}
+          {field(`${D.height} — ${barHeight}px`, <input type="range" min={40} max={120} value={barHeight} onChange={e => setBarHeight(+e.target.value)} />)}
+          {field(`${D.width} — ${barWidth}x`, <input type="range" min={1} max={3} step={1} value={barWidth} onChange={e => setBarWidth(+e.target.value)} />)}
         </div>
         <div className="bq-row3">
-          {field('Foreground', <input type="color" className="bq-color" value={barFg} onChange={e => setBarFg(e.target.value)} />)}
-          {field('Background', <input type="color" className="bq-color" value={barBg} onChange={e => setBarBg(e.target.value)} />)}
-          <label className="bq-check"><input type="checkbox" checked={barDisplay} onChange={e => setBarDisplay(e.target.checked)} /> Show text</label>
+          {field(D.fg, <input type="color" className="bq-color" value={barFg} onChange={e => setBarFg(e.target.value)} />)}
+          {field(D.bg, <input type="color" className="bq-color" value={barBg} onChange={e => setBarBg(e.target.value)} />)}
+          <label className="bq-check"><input type="checkbox" checked={barDisplay} onChange={e => setBarDisplay(e.target.checked)} /> {D.showText}</label>
         </div>
       </div>
 
       {/* RIGHT — preview */}
       <div className="bq-preview">
         <div className="bq-pcard">
-          <div className="bq-pcard-hd">QR Preview</div>
+          <div className="bq-pcard-hd">{D.qrPreview}</div>
           <div className="bq-pcanvas" style={{ background: qrData ? qrBg : 'transparent' }}>
             <canvas ref={qrCanvasRef} style={{ display: qrData ? 'block' : 'none', maxWidth: '100%' }} />
-            {!qrData && <span className="bq-empty">Enter content…</span>}
+            {!qrData && <span className="bq-empty">{D.enterContent}</span>}
           </div>
           <div className="bq-pbtns">
-            <button className="btn" onClick={dlQrPng}>Download PNG</button>
-            <button className="btn" onClick={dlQrSvg}>Download SVG</button>
-            <button className="btn" onClick={copyQr}>Copy PNG</button>
+            <button className="btn" onClick={dlQrPng}>{D.dlPng}</button>
+            <button className="btn" onClick={dlQrSvg}>{D.dlSvg}</button>
+            <button className="btn" onClick={copyQr}>{D.copyPng}</button>
           </div>
         </div>
 
         <div className="bq-pcard">
-          <div className="bq-pcard-hd">Barcode Preview</div>
+          <div className="bq-pcard-hd">{D.barPreview}</div>
           <div className="bq-pcanvas" style={{ background: barErr.ok ? barBg : 'transparent' }}>
             {barErr.ok
               ? <BarcodeSvg ref={barSvgRef} value={barValue} format={barFormat} displayValue={barDisplay} height={barHeight} width={barWidth} lineColor={barFg} background={barBg} />
-              : <span className="bq-empty">Fix the value to preview</span>}
+              : <span className="bq-empty">{D.fixValue}</span>}
           </div>
           <div className="bq-pbtns">
-            <button className="btn" onClick={dlBarPng} disabled={!barErr.ok}>Download PNG</button>
-            <button className="btn" onClick={dlBarSvg} disabled={!barErr.ok}>Download SVG</button>
+            <button className="btn" onClick={dlBarPng} disabled={!barErr.ok}>{D.dlPng}</button>
+            <button className="btn" onClick={dlBarSvg} disabled={!barErr.ok}>{D.dlSvg}</button>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTT } from '@/lib/toolText'
 
 function renderMd(src: string) {
   return src
@@ -20,6 +21,7 @@ function renderMd(src: string) {
 }
 
 export default function MarkdownPreview() {
+  const { tt, en } = useTT()
   const [input, setInput] = useState('')
   return (
     <>
@@ -27,12 +29,12 @@ export default function MarkdownPreview() {
         <div className="pane">
           <div className="pane-hdr">
             <span className="pane-label">Markdown</span>
-            <div className="btn-group"><button className="btn" onClick={() => setInput('')}>clear</button></div>
+            <div className="btn-group"><button className="btn" onClick={() => setInput('')}>{tt.clear}</button></div>
           </div>
-          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={'# Hello\nWrite **markdown** here…'} spellCheck={false} />
+          <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={en ? '# Hello\nWrite **markdown** here…' : '# Merhaba\nBuraya **markdown** yazın…'} spellCheck={false} />
         </div>
         <div className="pane">
-          <div className="pane-hdr"><span className="pane-label">Preview</span></div>
+          <div className="pane-hdr"><span className="pane-label">{en ? 'Preview' : 'Önizleme'}</span></div>
           <div style={{ flex: 1, overflow: 'auto', padding: 14 }}>
             <div className="md-preview" dangerouslySetInnerHTML={{ __html: '<p>' + renderMd(input) + '</p>' }} />
           </div>
@@ -40,7 +42,7 @@ export default function MarkdownPreview() {
       </div>
       <div className="statusbar">
         <span className="chip chip-ok">LIVE</span>
-        <span>Markdown rendered in real time</span>
+        <span>{en ? 'Markdown rendered in real time' : 'Markdown gerçek zamanlı işlenir'}</span>
       </div>
     </>
   )

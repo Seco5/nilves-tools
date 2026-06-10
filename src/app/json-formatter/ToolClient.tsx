@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTT } from '@/lib/toolText'
 import LineNumbers from '@/components/LineNumbers'
 
 function syntaxHL(s: string) {
@@ -31,11 +32,13 @@ const SAMPLE = JSON.stringify({
 })
 
 export default function JsonFormatter() {
+  const { tt, en } = useTT()
+  const pasteMsg = en ? 'Paste JSON to begin' : 'Başlamak için JSON yapıştırın'
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [chip, setChip] = useState<'idle'|'ok'|'err'>('idle')
-  const [chipTxt, setChipTxt] = useState('IDLE')
-  const [msg, setMsg] = useState('Paste JSON to begin')
+  const [chipTxt, setChipTxt] = useState<string>(en ? 'IDLE' : 'BEKLEMEDE')
+  const [msg, setMsg] = useState<string>(pasteMsg)
   const [stats, setStats] = useState('')
   const [indent, setIndent] = useState('2')
   const [outLines, setOutLines] = useState(1)
@@ -48,7 +51,7 @@ export default function JsonFormatter() {
   const format = (raw: string) => {
     if (!raw.trim()) {
       setOutput(''); setOutLines(1)
-      setChip('idle'); setChipTxt('IDLE'); setMsg('Paste JSON to begin'); setStats('')
+      setChip('idle'); setChipTxt(en ? 'IDLE' : 'BEKLEMEDE'); setMsg(pasteMsg); setStats('')
       return
     }
     try {
@@ -56,12 +59,12 @@ export default function JsonFormatter() {
       const fmt = JSON.stringify(p, null, getIndent())
       setOutput('<pre style="font-family:inherit;font-size:inherit;line-height:inherit;background:none;border:none;padding:0;margin:0">' + syntaxHL(esc(fmt)) + '</pre>')
       setOutLines(fmt.split('\n').length)
-      setChip('ok'); setChipTxt('VALID'); setMsg('Valid JSON')
-      setStats(fmt.split('\n').length + ' lines · ' + countKeys(p) + ' keys · ' + raw.length + ' chars')
+      setChip('ok'); setChipTxt(en ? 'VALID' : 'GEÇERLİ'); setMsg(en ? 'Valid JSON' : 'Geçerli JSON')
+      setStats(fmt.split('\n').length + (en ? ' lines · ' : ' satır · ') + countKeys(p) + (en ? ' keys · ' : ' anahtar · ') + raw.length + (en ? ' chars' : ' karakter'))
     } catch(e: unknown) {
       const err = (e as Error).message
       setOutput('<span style="color:var(--red)">' + esc(err) + '</span>'); setOutLines(1)
-      setChip('err'); setChipTxt('ERROR'); setMsg(err); setStats('')
+      setChip('err'); setChipTxt(en ? 'ERROR' : 'HATA'); setMsg(err); setStats('')
     }
   }
 
@@ -92,16 +95,16 @@ export default function JsonFormatter() {
       <div className="split" style={{ flex: 1 }}>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Input</span>
+            <span className="pane-label">{tt.input}</span>
             <div className="btn-group">
               <select className="indent-sel" value={indent} onChange={e => { setIndent(e.target.value); format(input) }}>
-                <option value="2">2 spaces</option>
-                <option value="4">4 spaces</option>
+                <option value="2">{en ? '2 spaces' : '2 boşluk'}</option>
+                <option value="4">{en ? '4 spaces' : '4 boşluk'}</option>
                 <option value="1">tab</option>
               </select>
-              <button className="btn-action ghost" onClick={loadSample}>Sample</button>
-              <button className="btn-action ghost" onClick={() => handleInput('')}>Clear</button>
-              <button className="btn-action format" onClick={() => format(input)}>Format ↵</button>
+              <button className="btn-action ghost" onClick={loadSample}>{tt.sample}</button>
+              <button className="btn-action ghost" onClick={() => handleInput('')}>{tt.clear}</button>
+              <button className="btn-action format" onClick={() => format(input)}>{tt.format} ↵</button>
             </div>
           </div>
           <div className="code-area">
@@ -110,17 +113,17 @@ export default function JsonFormatter() {
               value={input}
               onChange={e => handleInput(e.target.value)}
               onScroll={syncIn}
-              placeholder={'Paste JSON here…\n{"name":"devonekit","version":1}'}
+              placeholder={(en ? 'Paste JSON here…' : 'JSON yapıştırın…') + '\n{"name":"devonekit","version":1}'}
               spellCheck={false}
             />
           </div>
         </div>
         <div className="pane">
           <div className="pane-hdr">
-            <span className="pane-label">Output</span>
+            <span className="pane-label">{tt.output}</span>
             <div className="btn-group">
-              <button className="btn-action minify" onClick={minify}>Minify</button>
-              <button className="btn-action copy" onClick={copyOut}>Copy</button>
+              <button className="btn-action minify" onClick={minify}>{tt.minify}</button>
+              <button className="btn-action copy" onClick={copyOut}>{tt.copy}</button>
             </div>
           </div>
           <div className="code-area">
