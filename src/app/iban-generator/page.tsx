@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import ToolClient from './ToolClient'
 
 export const metadata: Metadata = {
-  title: 'IBAN Generator & Validator — DevOneKit',
+  title: 'IBAN Üretici & Doğrulayıcı — 20+ Ülke | DevOneKit',
   description:
-    'Generate and validate IBAN numbers for 20+ countries including Turkey, Germany, UK, France. Free, browser-based, no signup.',
-  keywords: ['iban generator', 'iban validator', 'tr iban', 'turkish iban', 'iban checker', 'international bank account number', 'iban format'],
+    'Türkiye, Almanya, İngiltere ve 20+ ülke için geçerli IBAN numarası üretin ve doğrulayın. mod97 algoritması ile anlık doğrulama. Ücretsiz, kayıtsız.',
+  keywords: ['iban üretici', 'iban doğrulayıcı', 'tr iban', 'iban generator', 'iban validator', 'turkish iban', 'iban checker', 'uluslararası banka hesap numarası'],
 }
 
 export default ToolClient

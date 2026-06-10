@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
-import { Copy, RefreshCw, CheckCircle2, Landmark } from 'lucide-react'
+import { useState, useMemo, type CSSProperties } from 'react'
+import Link from 'next/link'
+import {
+  Copy, Check, RefreshCw, Landmark, ShieldCheck, Info, Globe, AlertTriangle, Plus,
+} from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 // ── Ülke verisi ───────────────────────────────────────────────────────────────
@@ -33,20 +36,17 @@ const byCode = (c: string) => COUNTRIES.find((x) => x.code === c)
 
 // ── IBAN üretimi / doğrulaması ────────────────────────────────────────────────
 const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-function randInt(n: number) { return Math.floor(Math.random() * n) }
-function randomDigits(n: number) { return Array.from({ length: n }, () => randInt(10)).join('') }
-function randomLetters(n: number) { return Array.from({ length: n }, () => ALPHA[randInt(26)]).join('') }
+const randInt = (n: number) => Math.floor(Math.random() * n)
+const randomDigits = (n: number) => Array.from({ length: n }, () => randInt(10)).join('')
+const randomLetters = (n: number) => Array.from({ length: n }, () => ALPHA[randInt(26)]).join('')
 function mod97(numeric: string): number {
   let r = 0
   for (const ch of numeric) r = (r * 10 + (ch.charCodeAt(0) - 48)) % 97
   return r
 }
-function toNumeric(s: string): string {
-  return s.split('').map((c) => (/[A-Z]/.test(c) ? (c.charCodeAt(0) - 55).toString() : c)).join('')
-}
+const toNumeric = (s: string) => s.split('').map((c) => (/[A-Z]/.test(c) ? (c.charCodeAt(0) - 55).toString() : c)).join('')
 function calcCheckDigits(countryCode: string, bban: string): string {
-  const rem = mod97(toNumeric(bban + countryCode + '00'))
-  return String(98 - rem).padStart(2, '0')
+  return String(98 - mod97(toNumeric(bban + countryCode + '00'))).padStart(2, '0')
 }
 function genBBAN(country: Country): string {
   const len = country.len - 4
@@ -57,112 +57,154 @@ function genIBAN(country: Country): string {
   const bban = genBBAN(country)
   return country.code + calcCheckDigits(country.code, bban) + bban
 }
-function formatSpaced(iban: string): string {
-  return iban.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim()
-}
-
-// ── Copy Hook ─────────────────────────────────────────────────────────────────
-function useCopy() {
-  const [copied, setCopied] = useState<string | null>(null)
-  const copy = useCallback((text: string, key: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(key)
-    setTimeout(() => setCopied(null), 2000)
-  }, [])
-  return { copied, copy }
-}
+const formatSpaced = (iban: string) => iban.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim()
 
 // ── i18n ──────────────────────────────────────────────────────────────────────
 const T = {
   tr: {
-    badge: '🌍 Uluslararası Araçlar',
+    badge: '🌍 ULUSLARARASI',
     title: 'IBAN Üretici & Doğrulayıcı',
-    subtitle: '20+ ülke için geçerli formatta IBAN üretin ve doğrulayın. Yalnızca test amaçlıdır.',
-    genTitle: 'IBAN Üret',
-    searchCountry: 'Ülke Ara',
-    selectCountry: 'Ülke Seç',
-    searchPh: 'Ülke adı veya kodu…',
-    format: 'Biçim',
-    generate: 'Üret',
-    copy: 'Kopyala',
-    copied: 'Kopyalandı',
+    subtitle: '20+ ülke için geçerli IBAN numarası üretin ve doğrulayın. Yalnızca test amaçlıdır.',
+    genTitle: 'IBAN Üret', searchCountry: 'Ülke Ara', searchPh: 'Turkey, Germany, FR...',
+    country: 'Ülke', format: 'Biçim', generate: 'Üret', copy: 'Kopyala', copied: 'Kopyalandı!',
     noIban: 'Bu ülke IBAN kullanmaz',
-    valTitle: 'IBAN Doğrula',
-    valPh: "Herhangi bir ülke IBAN'ı yapıştırın…",
-    valid: 'Geçerli',
-    invalid: 'Geçersiz',
-    errCountry: 'Ülke kodu tanınmıyor',
-    errLength: (c: string, n: number) => `Uzunluk hatalı — ${c} IBAN ${n} karakter olmalı`,
+    valTitle: 'IBAN Doğrula', valPh: "Herhangi bir ülke IBAN'ı yapıştırın...",
+    valid: 'Geçerli', invalid: 'Geçersiz',
+    errCountry: 'Ülke kodu tanınmıyor', errLength: (c: string, n: number) => `Uzunluk hatalı — ${c} IBAN ${n} karakter olmalı`,
     errCheck: 'Kontrol hanesi doğrulaması başarısız',
-    infoTitle: 'Ülke Bilgisi',
-    country: 'Ülke',
-    length: 'Uzunluk',
-    checkDigits: 'Kontrol Hanesi',
-    bban: 'BBAN',
-    sepaMember: 'SEPA Üyesi',
-    yes: 'Evet',
-    no: 'Hayır',
-    formatPattern: 'Format',
-    example: 'Örnek',
-    chars: 'karakter',
-    emptyState: 'Ülke seç ve Üret butonuna bas',
+    structTitle: 'IBAN Yapısı', segCountry: 'Ülke', segCheck: 'Kontrol', segBban: 'BBAN',
+    totalLen: 'Toplam uzunluk', totalLenVal: 'Ülkeye göre 15–34 karakter', sepa: 'SEPA', sepaVal: 'Türkiye üye değil',
+    emptyState: 'Ülke seçin ve Üret butonuna basın',
+    rCountry: 'Ülke', rLength: 'Uzunluk', rCheck: 'Kontrol Hanesi', rBban: 'BBAN', rSepa: 'SEPA Üyesi', rFormat: 'Format',
+    chars: 'karakter', yes: 'Evet', no: 'Hayır',
+    cards: [
+      { title: '20+ Ülke Desteği', desc: 'Türkiye, Almanya, İngiltere, Fransa ve daha fazlası.' },
+      { title: 'mod97 Doğrulama', desc: 'Uluslararası IBAN standardına uygun kontrol algoritması.' },
+      { title: 'Yalnızca Test Amaçlı', desc: 'Gerçek banka hesaplarına ait değildir, finansal işlemlerde kullanılamaz.' },
+    ],
+    faqTitle: 'Sık Sorulan Sorular',
+    faq: [
+      { q: 'IBAN nedir?', a: "IBAN (International Bank Account Number), uluslararası para transferlerinde kullanılan standart banka hesap numarası formatıdır. Ülke kodu, kontrol hanesi ve BBAN'dan oluşur." },
+      { q: 'Türkiye SEPA üyesi mi?', a: 'Hayır. Türkiye SEPA (Single Euro Payments Area) üyesi değildir. Ancak TR IBAN, SWIFT/BIC ile birlikte uluslararası havale işlemlerinde yaygın olarak kullanılır.' },
+      { q: 'Üretilen IBAN gerçek bir hesaba ait olabilir mi?', a: "Teorik olarak mümkündür ancak son derece düşük bir ihtimaldir. Bu nedenle üretilen IBAN'ları yalnızca test ortamlarında kullanmanızı öneririz." },
+      { q: 'IBAN doğrulama nasıl çalışır?', a: "IBAN doğrulama mod97 algoritması kullanır. IBAN'ın ilk 4 karakteri sona alınır, harfler sayıya çevrilir ve büyük sayının 97'ye bölümünden kalan 1 ise IBAN geçerlidir." },
+      { q: 'Bu araç ücretsiz mi?', a: 'Evet, tamamen ücretsizdir. Kayıt, üyelik veya ödeme gerekmez. Tüm araçlar tarayıcınızda çalışır ve hiçbir veriniz sunucularımıza gönderilmez.' },
+    ],
+    relatedTitle: 'İlgili Araçlar',
+    related: [
+      { name: 'TCKN Üretici', desc: 'TC Kimlik Numarası', href: '/tckn-generator' },
+      { name: 'VKN Üretici', desc: 'Vergi Kimlik Numarası', href: '/vkn-generator' },
+      { name: 'Kredi Kartı No', desc: 'Test kart numarası', href: '/credit-card-generator' },
+    ],
   },
   en: {
-    badge: '🌍 International Tools',
+    badge: '🌍 INTERNATIONAL',
     title: 'IBAN Generator & Validator',
-    subtitle: 'Generate and validate valid-format IBANs for 20+ countries. For testing only.',
-    genTitle: 'Generate IBAN',
-    searchCountry: 'Search Country',
-    selectCountry: 'Select Country',
-    searchPh: 'Country name or code…',
-    format: 'Format',
-    generate: 'Generate',
-    copy: 'Copy',
-    copied: 'Copied',
+    subtitle: 'Generate and validate IBAN numbers for 20+ countries. For testing purposes only.',
+    genTitle: 'Generate IBAN', searchCountry: 'Search Country', searchPh: 'Turkey, Germany, FR...',
+    country: 'Country', format: 'Format', generate: 'Generate', copy: 'Copy', copied: 'Copied!',
     noIban: 'This country does not use IBAN',
-    valTitle: 'Validate IBAN',
-    valPh: 'Paste an IBAN from any country…',
-    valid: 'Valid',
-    invalid: 'Invalid',
-    errCountry: 'Unknown country code',
-    errLength: (c: string, n: number) => `Wrong length — ${c} IBAN must be ${n} characters`,
+    valTitle: 'Validate IBAN', valPh: 'Paste any country IBAN...',
+    valid: 'Valid', invalid: 'Invalid',
+    errCountry: 'Unknown country code', errLength: (c: string, n: number) => `Wrong length — ${c} IBAN must be ${n} characters`,
     errCheck: 'Check-digit validation failed',
-    infoTitle: 'Country Info',
-    country: 'Country',
-    length: 'Length',
-    checkDigits: 'Check Digits',
-    bban: 'BBAN',
-    sepaMember: 'SEPA Member',
-    yes: 'Yes',
-    no: 'No',
-    formatPattern: 'Format',
-    example: 'Example',
-    chars: 'characters',
+    structTitle: 'IBAN Structure', segCountry: 'Country', segCheck: 'Check', segBban: 'BBAN',
+    totalLen: 'Total length', totalLenVal: '15–34 characters by country', sepa: 'SEPA', sepaVal: 'Turkey not a member',
     emptyState: 'Select a country and press Generate',
+    rCountry: 'Country', rLength: 'Length', rCheck: 'Check Digits', rBban: 'BBAN', rSepa: 'SEPA Member', rFormat: 'Format',
+    chars: 'characters', yes: 'Yes', no: 'No',
+    cards: [
+      { title: '20+ Country Support', desc: 'Turkey, Germany, UK, France and many more.' },
+      { title: 'mod97 Validation', desc: 'Check algorithm compliant with international IBAN standard.' },
+      { title: 'Testing Only', desc: 'Not linked to real bank accounts, cannot be used in financial transactions.' },
+    ],
+    faqTitle: 'Frequently Asked Questions',
+    faq: [
+      { q: 'What is IBAN?', a: 'IBAN (International Bank Account Number) is a standard bank account number format used in international money transfers. It consists of a country code, check digits and BBAN.' },
+      { q: 'Is Turkey a SEPA member?', a: 'No. Turkey is not a SEPA member. However, TR IBAN is widely used in international wire transfers together with SWIFT/BIC codes.' },
+      { q: 'Can a generated IBAN belong to a real account?', a: 'Theoretically possible but extremely unlikely. We recommend using generated IBANs only in test environments.' },
+      { q: 'How does IBAN validation work?', a: 'IBAN validation uses the mod97 algorithm. The first 4 characters of the IBAN are moved to the end, letters are converted to numbers, and if the remainder when divided by 97 equals 1, the IBAN is valid.' },
+      { q: 'Is this tool free?', a: 'Yes, completely free. No registration, membership or payment required. All tools run in your browser and none of your data is sent to our servers.' },
+    ],
+    relatedTitle: 'Related Tools',
+    related: [
+      { name: 'TCKN Generator', desc: 'Turkish National ID', href: '/tckn-generator' },
+      { name: 'VKN Generator', desc: 'Tax ID Number', href: '/vkn-generator' },
+      { name: 'Credit Card No', desc: 'Test card number', href: '/credit-card-generator' },
+    ],
   },
 } as const
 
-// ── Detail row ─────────────────────────────────────────────────────────────────
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+const CARD_ICONS = [Globe, Check, AlertTriangle]
+
+const sectionTitle: CSSProperties = {
+  fontSize: 16, fontWeight: 500, color: 'var(--text)', marginBottom: '.875rem',
+  paddingBottom: '.5rem', borderBottom: '0.5px solid var(--border)',
+}
+const cardLabel: CSSProperties = {
+  fontSize: 13, fontWeight: 500, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 7, color: 'var(--text)',
+}
+const fieldLabel: CSSProperties = {
+  fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.04em',
+  color: 'var(--muted)', marginBottom: 5, display: 'block',
+}
+const inputStyle: CSSProperties = {
+  width: '100%', padding: '8px 11px', borderRadius: 8, border: '0.5px solid var(--border)',
+  background: 'var(--surface2)', color: 'var(--text)', fontSize: 13,
+}
+const SEG = [
+  { bg: 'rgba(29,158,117,.16)', fg: 'var(--teal)' },
+  { bg: 'rgba(96,165,250,.16)', fg: 'var(--blue)' },
+  { bg: 'rgba(251,191,36,.16)', fg: 'var(--yellow)' },
+  { bg: 'rgba(244,114,182,.16)', fg: '#e25fa6' },
+]
+
+function Segment({ value, label, idx }: { value: string; label: string; idx: number }) {
+  const s = SEG[idx]
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] py-2.5 last:border-0">
-      <span className="shrink-0 text-xs text-[var(--muted2)]">{label}</span>
-      <span className="text-right text-sm text-[var(--text)]">{children}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 4px', flex: 1, background: s.bg }}>
+      <span style={{ fontSize: 12, fontWeight: 500, color: s.fg, wordBreak: 'break-all', textAlign: 'center' }}>{value}</span>
+      <span style={{ fontSize: 9, marginTop: 2, opacity: 0.7, color: 'var(--muted2)' }}>{label}</span>
+    </div>
+  )
+}
+
+// ── FAQ item ──────────────────────────────────────────────────────────────────
+function FaqItem({ q, a, last }: { q: string; a: string; last: boolean }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ borderBottom: last ? 'none' : '0.5px solid var(--border)' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%',
+          padding: '12px 0', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--text)',
+          background: 'none', border: 'none', textAlign: 'left',
+        }}
+      >
+        <span>{q}</span>
+        <Plus size={16} style={{ flexShrink: 0, marginLeft: 16, color: open ? 'var(--teal)' : 'var(--muted)', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform .2s, color .2s' }} />
+      </button>
+      <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows .25s ease' }}>
+        <div style={{ overflow: 'hidden' }}>
+          <p style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.7, paddingBottom: 12 }}>{a}</p>
+        </div>
+      </div>
     </div>
   )
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function IbanToolClient() {
+export default function IbanGeneratorClient() {
   const { lang } = useLanguage()
   const t = T[lang === 'en' ? 'en' : 'tr']
-  const { copied, copy } = useCopy()
 
   const [search, setSearch] = useState('')
   const [code, setCode] = useState('TR')
   const [spaced, setSpaced] = useState(true)
   const [iban, setIban] = useState('')
   const [valInput, setValInput] = useState('')
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   const selected = byCode(code)!
   const usesIban = selected.len > 0
@@ -172,210 +214,218 @@ export default function IbanToolClient() {
     return COUNTRIES.filter((c) => !q || c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q))
   }, [search])
 
-  const generate = () => {
-    if (!usesIban) return
-    setIban(genIBAN(selected))
+  const copy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedKey(key)
+    setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1500)
   }
+  const generate = () => { if (usesIban) setIban(genIBAN(selected)) }
   const fmt = (s: string) => (spaced ? formatSpaced(s) : s.replace(/\s/g, ''))
 
-  // ── Validator (real-time) ──
   const val = useMemo(() => {
     const cleaned = valInput.replace(/\s/g, '').toUpperCase()
     if (!cleaned) return null
     const c = byCode(cleaned.slice(0, 2))
     if (!c || c.len === 0) return { ok: false as const, err: t.errCountry }
     if (cleaned.length !== c.len) return { ok: false as const, err: t.errLength(c.code, c.len) }
-    const rearr = cleaned.slice(4) + cleaned.slice(0, 4)
-    if (mod97(toNumeric(rearr)) !== 1) return { ok: false as const, err: t.errCheck }
+    if (mod97(toNumeric(cleaned.slice(4) + cleaned.slice(0, 4))) !== 1) return { ok: false as const, err: t.errCheck }
     return { ok: true as const, country: c, check: cleaned.slice(2, 4), bban: cleaned.slice(4) }
   }, [valInput, t])
 
-  const onValChange = (raw: string) => {
-    const cleaned = raw.replace(/[^0-9a-zA-Z]/g, '').toUpperCase().slice(0, 34)
-    setValInput(formatSpaced(cleaned))
-  }
+  const onValChange = (raw: string) => setValInput(formatSpaced(raw.replace(/[^0-9a-zA-Z]/g, '').toUpperCase().slice(0, 34)))
 
-  // ── Right panel colored segments ──
   const half = iban ? 4 + Math.ceil((iban.length - 4) / 2) : 0
-  const parts = iban
-    ? [
-        { v: iban.slice(0, 2), label: t.country, bg: 'rgba(29,158,117,.22)', fg: 'var(--teal)' },
-        { v: iban.slice(2, 4), label: t.checkDigits, bg: 'rgba(96,165,250,.20)', fg: 'var(--blue)' },
-        { v: iban.slice(4, half), label: 'BBAN ¹', bg: 'rgba(251,191,36,.18)', fg: 'var(--yellow)' },
-        { v: iban.slice(half), label: 'BBAN ²', bg: 'rgba(244,114,182,.18)', fg: '#f472b6' },
-      ]
-    : []
 
   return (
-    <main className="mx-auto max-w-6xl space-y-16 px-6 py-16 md:px-10">
-      {/* Hero */}
-      <section className="space-y-4 text-center">
-        <span className="inline-block rounded-full bg-[var(--teal-dim)] px-3 py-1 text-xs font-medium uppercase tracking-widest text-[var(--teal)]">
+    <div style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 1rem' }}>
+      {/* HERO */}
+      <section style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <span style={{ display: 'inline-flex', background: 'var(--teal-dim)', color: 'var(--teal)', fontSize: 11, padding: '3px 12px', borderRadius: 20, letterSpacing: '.04em', fontWeight: 500 }}>
           {t.badge}
         </span>
-        <h1 className="text-4xl font-bold tracking-tight text-[var(--text)]">{t.title}</h1>
-        <p className="mx-auto max-w-lg text-sm leading-relaxed text-[var(--muted2)]">{t.subtitle}</p>
+        <h1 style={{ fontSize: 28, fontWeight: 500, margin: '.75rem 0 .5rem', color: 'var(--text)' }}>{t.title}</h1>
+        <p style={{ fontSize: 14, color: 'var(--muted2)', maxWidth: 520, margin: '0 auto', lineHeight: 1.6 }}>{t.subtitle}</p>
       </section>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-        {/* SOL PANEL */}
-        <div className="space-y-6">
+      {/* MAIN — two columns */}
+      <div className="iban-grid" style={{ marginBottom: '1.5rem' }}>
+        {/* LEFT */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* CARD 1 — Generator */}
-          <section className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-            <h2 className="text-base font-bold text-[var(--text)]">{t.genTitle}</h2>
+          <section style={{ background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '1.25rem' }}>
+            <div style={cardLabel}><Landmark size={16} style={{ color: 'var(--muted2)' }} /> {t.genTitle}</div>
 
-            <label className="block space-y-1.5">
-              <span className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{t.searchCountry}</span>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t.searchPh}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-[#16a34a] focus:outline-none"
-              />
-            </label>
+            <label style={fieldLabel}>{t.searchCountry}</label>
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.searchPh} style={{ ...inputStyle, marginBottom: 10 }} />
 
-            <label className="block space-y-1.5">
-              <span className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{t.selectCountry}</span>
-              <select
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-[#16a34a] focus:outline-none"
-              >
-                {filtered.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag} {c.name} ({c.code}){c.len === 0 ? ' — ✕' : ''}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <label style={fieldLabel}>{t.country}</label>
+            <select value={code} onChange={(e) => setCode(e.target.value)} style={{ ...inputStyle, marginBottom: 12 }}>
+              {filtered.map((c) => (
+                <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.code}){c.len === 0 ? ' — ✕' : ''}</option>
+              ))}
+            </select>
 
-            <div className="space-y-1.5">
-              <span className="block text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{t.format}</span>
-              <div className="inline-flex w-full rounded-xl border border-[var(--border)] p-0.5">
-                <button
-                  onClick={() => setSpaced(true)}
-                  className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${spaced ? 'bg-[#16a34a] text-white' : 'text-[var(--muted2)]'}`}
-                >
-                  TR33 0006…
-                </button>
-                <button
-                  onClick={() => setSpaced(false)}
-                  className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${!spaced ? 'bg-[#16a34a] text-white' : 'text-[var(--muted2)]'}`}
-                >
-                  TR330006…
-                </button>
+            {/* Country info box */}
+            <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '10px 12px', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 22, lineHeight: 1 }}>{selected.flag}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{selected.name}</span>
               </div>
+              <div style={{ fontSize: 11, color: 'var(--muted2)', marginTop: 2 }}>
+                {usesIban ? `${selected.len} ${t.chars}` : '—'} · SEPA: {selected.sepa ? t.yes : t.no}
+              </div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--teal)', background: 'var(--surface)', padding: '5px 8px', borderRadius: 5, marginTop: 6, wordBreak: 'break-all' }}>
+                {selected.format}
+              </div>
+              {selected.example && <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4, wordBreak: 'break-all' }}>{selected.example}</div>}
             </div>
 
-            <button
-              onClick={generate}
-              disabled={!usesIban}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#16a34a] px-7 py-3 text-[15px] font-semibold text-white transition-all duration-150 hover:bg-[#15803d] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <RefreshCw size={16} />
-              {t.generate}
+            {/* Format toggle */}
+            <label style={fieldLabel}>{t.format}</label>
+            <div style={{ display: 'flex', border: '0.5px solid var(--border)', borderRadius: 8, padding: 2, marginBottom: 12 }}>
+              {[true, false].map((sp) => (
+                <button key={String(sp)} onClick={() => setSpaced(sp)}
+                  style={{ flex: 1, padding: '7px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, fontFamily: 'var(--mono)', background: spaced === sp ? 'var(--teal)' : 'transparent', color: spaced === sp ? '#fff' : 'var(--muted2)' }}>
+                  {sp ? 'TR33 0006...' : 'TR330006...'}
+                </button>
+              ))}
+            </div>
+
+            <button onClick={generate} disabled={!usesIban}
+              style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', background: 'var(--teal)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: usesIban ? 'pointer' : 'not-allowed', opacity: usesIban ? 1 : 0.4 }}>
+              <RefreshCw size={14} /> {t.generate}
             </button>
-            {!usesIban && <p className="text-center text-xs text-[var(--del-text)]">{t.noIban}</p>}
+            {!usesIban && <p style={{ fontSize: 11, color: 'var(--del-text)', textAlign: 'center', marginTop: 8 }}>{t.noIban}</p>}
           </section>
 
           {/* CARD 2 — Validator */}
-          <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-            <h2 className="text-base font-bold text-[var(--text)]">{t.valTitle}</h2>
-            <textarea
-              value={valInput}
-              onChange={(e) => onValChange(e.target.value)}
-              placeholder={t.valPh}
-              rows={2}
-              className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-4 py-3 font-mono text-sm tracking-wider text-[var(--text)] focus:border-[#16a34a] focus:outline-none"
-            />
+          <section style={{ background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '1.25rem' }}>
+            <div style={cardLabel}><ShieldCheck size={16} style={{ color: 'var(--muted2)' }} /> {t.valTitle}</div>
+            <textarea value={valInput} onChange={(e) => onValChange(e.target.value)} placeholder={t.valPh} rows={2}
+              style={{ width: '100%', resize: 'none', fontFamily: 'var(--mono)', fontSize: 12, padding: '9px 11px', borderRadius: 8, border: '0.5px solid var(--border2)', background: 'var(--surface2)', color: 'var(--text)', letterSpacing: '.05em' }} />
             {val && (
-              <div className="space-y-3">
+              <div style={{ marginTop: 12 }}>
                 {val.ok ? (
                   <>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--teal-dim)] px-3 py-1 text-xs font-semibold text-[var(--teal)]">
-                      <CheckCircle2 size={13} /> {t.valid}
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--teal-dim)', color: 'var(--teal)', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>
+                      <Check size={13} /> {t.valid} {val.country.flag} {val.country.name}
                     </span>
-                    <div className="rounded-xl border border-[var(--border)] px-4 py-1">
-                      <Row label={t.country}>{val.country.flag} {val.country.name}</Row>
-                      <Row label={t.checkDigits}><span className="font-mono">{val.check}</span></Row>
-                      <Row label={t.bban}><span className="break-all font-mono text-xs">{val.bban}</span></Row>
-                      <Row label={t.sepaMember}>{val.country.sepa ? t.yes : t.no}</Row>
+                    <div style={{ marginTop: 10 }}>
+                      <table className="tckn-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <tbody>
+                          <tr><td className="mono-cell">{t.rCheck}</td><td style={{ fontFamily: 'var(--mono)' }}>{val.check}</td></tr>
+                          <tr><td className="mono-cell">{t.rBban}</td><td style={{ fontFamily: 'var(--mono)', fontSize: 11, wordBreak: 'break-all' }}>{val.bban}</td></tr>
+                          <tr><td className="mono-cell">{t.rSepa}</td><td>{val.country.sepa ? t.yes : t.no}</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--del-bg)] px-3 py-1 text-xs font-semibold text-[var(--del-text)]">
-                      ✗ {t.invalid}
-                    </span>
-                    <p className="text-sm text-[var(--del-text)]">{val.err}</p>
+                  <div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--del-bg)', color: 'var(--del-text)', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>✗ {t.invalid}</span>
+                    <p style={{ fontSize: 13, color: 'var(--del-text)', marginTop: 8 }}>{val.err}</p>
                   </div>
                 )}
               </div>
             )}
           </section>
 
-          {/* CARD 3 — Country info */}
-          <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl leading-none">{selected.flag}</span>
-              <div>
-                <p className="text-base font-bold text-[var(--text)]">{selected.name}</p>
-                <p className="text-xs text-[var(--muted)]">{selected.code}</p>
-              </div>
+          {/* CARD 3 — Structure */}
+          <section style={{ background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '1.25rem' }}>
+            <div style={cardLabel}><Info size={16} style={{ color: 'var(--muted2)' }} /> {t.structTitle}</div>
+            <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden' }}>
+              <Segment value="TR" label={t.segCountry} idx={0} />
+              <Segment value="XX" label={t.segCheck} idx={1} />
+              <Segment value="BBAN..." label={t.segBban} idx={2} />
             </div>
-            <div className="px-1">
-              <Row label={t.length}>{usesIban ? `${selected.len} ${t.chars}` : '—'}</Row>
-              <Row label={t.sepaMember}>{selected.sepa ? t.yes : t.no}</Row>
-              <Row label={t.formatPattern}><span className="break-all font-mono text-xs">{selected.format}</span></Row>
-              {selected.example && <Row label={t.example}><span className="break-all font-mono text-xs">{selected.example}</span></Row>}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 10 }}>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 10px' }}>
+                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text)' }}>{t.totalLen}</div>
+                <div style={{ fontSize: 11, color: 'var(--muted2)' }}>{t.totalLenVal}</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 10px' }}>
+                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text)' }}>{t.sepa}</div>
+                <div style={{ fontSize: 11, color: 'var(--muted2)' }}>{t.sepaVal}</div>
+              </div>
             </div>
           </section>
         </div>
 
-        {/* SAĞ PANEL — tek IBAN sonucu */}
-        <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+        {/* RIGHT — result */}
+        <section style={{ background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 14, padding: iban ? '1.5rem' : 0 }}>
           {!iban ? (
-            <div className="flex h-full min-h-[300px] flex-col items-center justify-center gap-4 text-center">
-              <Landmark size={40} className="text-[var(--border2)]" />
-              <p className="text-sm text-[var(--muted)]">{t.emptyState}</p>
+            <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+              <Landmark size={48} style={{ opacity: 0.2, display: 'block', margin: '0 auto 12px', color: 'var(--text)' }} />
+              <p style={{ fontSize: 13, color: 'var(--muted)' }}>{t.emptyState}</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* IBAN + copy */}
-              <div className="flex items-start justify-between gap-3">
-                <p className="break-all font-mono text-2xl font-bold tracking-wider text-[#22c55e] sm:text-3xl">{fmt(iban)}</p>
-                <button
-                  onClick={() => copy(fmt(iban), 'main')}
-                  className="shrink-0 rounded-lg border border-[var(--border2)] p-2.5 text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"
-                  title={t.copy}
-                >
-                  {copied === 'main' ? <CheckCircle2 size={16} className="text-[#16a34a]" /> : <Copy size={16} />}
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 500, color: 'var(--teal)', letterSpacing: '.08em', wordBreak: 'break-all' }}>{fmt(iban)}</span>
+                <button onClick={() => copy(fmt(iban), 'main')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '0.5px solid var(--border2)', borderRadius: 8, padding: '6px 14px', background: 'transparent', fontSize: 12, cursor: 'pointer', color: copiedKey === 'main' ? 'var(--teal)' : 'var(--muted2)' }}>
+                  {copiedKey === 'main' ? <Check size={14} /> : <Copy size={14} />} {copiedKey === 'main' ? t.copied : t.copy}
                 </button>
               </div>
 
-              {/* Renkli segment çubuğu */}
-              <div className="flex flex-wrap gap-2">
-                {parts.map((p, i) => (
-                  <div key={i} className="flex min-w-[64px] flex-1 flex-col items-center rounded-xl px-2 py-3" style={{ background: p.bg }}>
-                    <span className="break-all text-center font-mono text-sm font-semibold" style={{ color: p.fg }}>{p.v}</span>
-                    <span className="mt-1 text-[10px] uppercase tracking-wide text-[var(--muted2)]">{p.label}</span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', marginBottom: 14 }}>
+                <Segment value={iban.slice(0, 2)} label={t.segCountry} idx={0} />
+                <Segment value={iban.slice(2, 4)} label={t.segCheck} idx={1} />
+                <Segment value={iban.slice(4, half)} label="BBAN ¹" idx={2} />
+                <Segment value={iban.slice(half)} label="BBAN ²" idx={3} />
               </div>
 
-              {/* Detay tablosu */}
-              <div className="rounded-xl border border-[var(--border)] px-4 py-1">
-                <Row label={t.country}>{selected.flag} {selected.name}</Row>
-                <Row label={t.length}>{iban.length} {t.chars}</Row>
-                <Row label={t.checkDigits}><span className="font-mono">{iban.slice(2, 4)}</span></Row>
-                <Row label={t.bban}><span className="break-all font-mono text-xs">{iban.slice(4)}</span></Row>
-                <Row label={t.sepaMember}>{selected.sepa ? t.yes : t.no}</Row>
-                <Row label={t.formatPattern}><span className="break-all font-mono text-xs">{selected.format}</span></Row>
-              </div>
-            </div>
+              <table className="tckn-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <tbody>
+                  <tr><td className="mono-cell">{t.rCountry}</td><td style={{ color: 'var(--teal)' }}>{selected.flag} {selected.name}</td></tr>
+                  <tr><td className="mono-cell">{t.rLength}</td><td>{iban.length} {t.chars}</td></tr>
+                  <tr><td className="mono-cell">{t.rCheck}</td><td style={{ fontFamily: 'var(--mono)' }}>{iban.slice(2, 4)}</td></tr>
+                  <tr><td className="mono-cell">{t.rBban}</td><td style={{ fontFamily: 'var(--mono)', fontSize: 11, wordBreak: 'break-all' }}>{iban.slice(4)}</td></tr>
+                  <tr><td className="mono-cell">{t.rSepa}</td><td style={{ color: selected.sepa ? 'var(--teal)' : 'var(--muted)' }}>{selected.sepa ? t.yes : t.no}</td></tr>
+                  <tr><td className="mono-cell">{t.rFormat}</td><td style={{ fontFamily: 'var(--mono)', fontSize: 11, wordBreak: 'break-all' }}>{selected.format}</td></tr>
+                </tbody>
+              </table>
+            </>
           )}
         </section>
       </div>
-    </main>
+
+      {/* INFO CARDS */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: '1.5rem' }}>
+        {t.cards.map((c, i) => {
+          const Icon = CARD_ICONS[i]
+          return (
+            <div key={i} style={{ background: 'var(--surface2)', borderRadius: 10, padding: '1rem' }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--teal-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '.625rem' }}>
+                <Icon size={16} style={{ color: 'var(--teal)' }} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{c.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted2)', lineHeight: 1.5 }}>{c.desc}</div>
+            </div>
+          )
+        })}
+      </section>
+
+      {/* FAQ */}
+      <section style={{ marginBottom: '1.5rem' }}>
+        <h2 style={sectionTitle}>{t.faqTitle}</h2>
+        {t.faq.map((f, i) => (
+          <FaqItem key={i} q={f.q} a={f.a} last={i === t.faq.length - 1} />
+        ))}
+      </section>
+
+      {/* RELATED */}
+      <section>
+        <h2 style={sectionTitle}>{t.relatedTitle}</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {t.related.map((r) => (
+            <Link key={r.href} href={r.href} className="tckn-related-card">
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted2)', marginTop: 2 }}>{r.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
   )
 }
