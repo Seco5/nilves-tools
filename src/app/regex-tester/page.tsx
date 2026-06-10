@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import ToolClient from './ToolClient'
 
 export const metadata: Metadata = {
-  title: 'Regex Tester — DevOneKit',
-  description: 'Test and debug regular expressions live. Highlights all matches in the test string and shows match count.',
-  keywords: ['regex tester', 'regular expression', 'regex tool', 'regex matcher', 'regexp'],
+  title: 'Regex Tester — Düzenli İfade Test Aracı | DevOneKit',
+  description: 'Regex kalıplarınızı gerçek zamanlı test edin. Eşleşmeler anında vurgulanır, flag desteği var. Türkçe açıklamalar ve hazır kalıplarla regex öğrenin.',
+  keywords: ['regex tester', 'regex test', 'düzenli ifade', 'regular expression', 'regex türkçe', 'online regex', 'regex checker', 'javascript regex', 'regex öğren'],
 }
 
 export default ToolClient
