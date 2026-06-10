@@ -68,7 +68,6 @@ const T = {
       { label: 'TCKN Üretici', href: '/tckn-generator' },
       { label: 'IBAN Üretici', href: '/iban-generator' },
       { label: 'Kredi Kartı No', href: '/credit-card-generator' },
-      { label: 'Sahte Kişi Verisi', href: '/fake-person-data' },
     ],
   },
   en: {
@@ -110,7 +109,6 @@ const T = {
       { label: 'TCKN Generator', href: '/tckn-generator' },
       { label: 'IBAN Generator', href: '/iban-generator' },
       { label: 'Credit Card No', href: '/credit-card-generator' },
-      { label: 'Fake Person Data', href: '/fake-person-data' },
     ],
   },
 } as const

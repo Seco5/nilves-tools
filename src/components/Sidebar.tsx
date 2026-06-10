@@ -55,7 +55,6 @@ const items: Item[] = [
   { kind: 'link',    tkey: 'tools.vknGenerator',      href: '/vkn-generator' },
   { kind: 'link',    tkey: 'tools.ibanGenerator',     href: '/iban-generator' },
   { kind: 'link',    tkey: 'tools.creditCard',        href: '/credit-card-generator' },
-  { kind: 'link',    tkey: 'tools.fakeData',          href: '/fake-person-data' },
 
   { kind: 'section', tkey: 'nav.productivity' },
   { kind: 'link',    tkey: 'tools.projectPlanner',    href: '/project-planner' },

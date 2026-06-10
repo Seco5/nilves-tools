@@ -188,6 +188,14 @@ function SeoContent() {
 }
 
 export default function CreditCardGenerator() {
+  const { lang } = useLanguage()
+  const en = lang === 'en'
+  const L = {
+    type: en ? 'Type:' : 'Tip:',
+    count: en ? 'Count:' : 'Adet:',
+    generate: en ? 'Generate' : 'Üret',
+    copyAll: en ? 'Copy all' : 'Tümünü Kopyala',
+  }
   const [type, setType] = useState('visa')
   const [count, setCount] = useState(6)
   const [grid, setGrid] = useState('')
@@ -216,17 +224,17 @@ export default function CreditCardGenerator() {
     <>
       <div className="gen-wrap">
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', marginBottom:'1.25rem' }}>
-          <label className="gen-label">Type:</label>
+          <label className="gen-label">{L.type}</label>
           <select className="gen-sel" value={type} onChange={e => setType(e.target.value)}>
             <option value="visa">Visa</option>
             <option value="mc">Mastercard</option>
             <option value="amex">Amex</option>
             <option value="troy">Troy</option>
           </select>
-          <label className="gen-label">Count:</label>
+          <label className="gen-label">{L.count}</label>
           <input type="number" min={1} max={20} value={count} className="gen-num" onChange={e => setCount(Number(e.target.value))} />
-          <button className="btn primary" onClick={() => gen()}>Generate</button>
-          <button className="btn" onClick={copyAll}>Copy all</button>
+          <button className="btn primary" onClick={() => gen()}>{L.generate}</button>
+          <button className="btn" onClick={copyAll}>{L.copyAll}</button>
         </div>
         <div className="gen-grid" id="cc-grid" dangerouslySetInnerHTML={{ __html: grid }} />
         <SeoContent />

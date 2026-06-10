@@ -2,7 +2,7 @@ import {
   Braces, GitCompareArrows, CodeXml, Database, ArrowLeftRight, FileText,
   Fingerprint, KeyRound, Hash, Pilcrow, Palette, QrCode, Binary, Link2,
   ShieldCheck, Clock, Calculator, AlarmClock, Regex, IdCard, Building2,
-  Landmark, CreditCard, UserRound, GraduationCap, CalendarRange,
+  Landmark, CreditCard, GraduationCap, CalendarRange,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -36,7 +36,6 @@ export const TOOL_ICONS: Record<string, LucideIcon> = {
   '/vkn-generator':         Building2,
   '/iban-generator':     Landmark,
   '/credit-card-generator': CreditCard,
-  '/fake-person-data':      UserRound,
 
   '/project-planner':       CalendarRange,
   '/sql-playground':        GraduationCap,
