@@ -1,6 +1,43 @@
 'use client'
 import { useState, useMemo, useRef, useEffect } from 'react'
 import * as XLSX from 'xlsx'
+import { useLanguage } from '@/contexts/LanguageContext'
+
+/* ─── i18n ───────────────────────────────────────────────────── */
+const TXT = {
+  tr: {
+    colName: 'Görev Adı', colDays: 'Gün', colDeps: 'Bağımlılık', colStart: 'Başlangıç', colEnd: 'Bitiş',
+    startDate: 'Başlangıç tarihi', businessDays: 'İş Günü', calendarDays: 'Takvim Günü',
+    generatePlan: 'Plan Oluştur', summary: 'Özet', exportExcel: "Excel'e Aktar", pasteRows: 'Satır Yapıştır', addTask: 'Görev Ekle',
+    newProject: 'Yeni proje', closeProject: 'Projeyi kapat', newBtn: '+ Yeni', untitled: 'Adsız',
+    taskNamePh: 'Görev adı…', depsPh: 'örn. 1,2', dragReorder: 'Sürükleyerek sırala', changeColor: 'Rengi değiştir', deleteTask: 'Görevi sil',
+    projectNameAria: 'Proje adı', dayModeAria: 'Gün sayma modu',
+    cycle: 'Döngüsel bağımlılık tespit edildi — zaman çizelgesini görmek için "Bağımlılık" alanlarını düzeltin.',
+    warnGenerate: 'Yol haritası oluşturmadan önce en az bir görevi ad ve süre ile ekleyin.',
+    task: 'görev', workDays: 'iş günü', ends: 'bitiş', day: 'gün',
+    statusHint: 'Satır yapıştır:', dragHint: 'Sürükleyerek sırala', colorHint: 'Renk için kategori noktasına tıkla',
+    untitledProject: 'Adsız proje', noSchedule: 'Henüz zaman çizelgesi yok', close: 'Kapat',
+    tasks: 'Görevler', calDaysLbl: 'Takvim Günü', dependencies: 'Bağımlılıklar', startFinish: 'başlangıç → bitiş', taskLinks: 'görev bağlantısı',
+    timeline: 'Zaman Çizelgesi', endDate: 'Bitiş tarihi', calSpan: 'Takvim aralığı', totalEffort: 'Toplam iş eforu', countingMode: 'Sayma modu',
+    bDays: 'İş günü', cDays: 'Takvim günü', longest: 'En uzun görevler', days: 'gün',
+  },
+  en: {
+    colName: 'Task Name', colDays: 'Days', colDeps: 'Depends On', colStart: 'Start', colEnd: 'End',
+    startDate: 'Start date', businessDays: 'Business Days', calendarDays: 'Calendar Days',
+    generatePlan: 'Generate Plan', summary: 'Summary', exportExcel: 'Export Excel', pasteRows: 'Paste Rows', addTask: 'Add Task',
+    newProject: 'New project', closeProject: 'Close project', newBtn: '+ New', untitled: 'Untitled',
+    taskNamePh: 'Task name…', depsPh: 'e.g. 1,2', dragReorder: 'Drag to reorder', changeColor: 'Click to change color', deleteTask: 'Delete task',
+    projectNameAria: 'Project name', dayModeAria: 'Day counting mode',
+    cycle: 'Circular dependency detected — fix the "Depends On" references to see the timeline.',
+    warnGenerate: 'Add at least one task with a name and duration before generating your roadmap.',
+    task: 'task', workDays: 'work days', ends: 'ends', day: 'day',
+    statusHint: 'Paste rows with', dragHint: 'Drag to reorder', colorHint: 'Click category dot to change color',
+    untitledProject: 'Untitled project', noSchedule: 'No schedule yet', close: 'Close',
+    tasks: 'Tasks', calDaysLbl: 'Calendar Days', dependencies: 'Dependencies', startFinish: 'start → finish', taskLinks: 'task links',
+    timeline: 'Timeline', endDate: 'End date', calSpan: 'Calendar span', totalEffort: 'Total work effort', countingMode: 'Counting mode',
+    bDays: 'Business days', cDays: 'Calendar days', longest: 'Longest tasks', days: 'days',
+  },
+} as const
 
 /* ─── Constants ──────────────────────────────────────────────── */
 const DAY_W = 36
@@ -104,6 +141,11 @@ function makeBlankProject(n: number): Project {
 }
 
 export default function ProjectPlanner() {
+  const { lang } = useLanguage()
+  const L = TXT[lang === 'en' ? 'en' : 'tr']
+  const colLabel: Record<string, string> = {
+    drag: '', num: '#', name: L.colName, days: L.colDays, deps: L.colDeps, start: L.colStart, end: L.colEnd, cat: '', del: '',
+  }
   /* Multiple projects, switchable without leaving the page */
   const firstRef = useRef<Project>(undefined)
   if (!firstRef.current) firstRef.current = makeDefaultProject()
@@ -320,7 +362,7 @@ export default function ProjectPlanner() {
   const generate = () => {
     const ok = tasks.length > 0 && tasks.every(t => t.name.trim() && t.days > 0)
     if (!ok) {
-      setWarning('Add at least one task with a name and duration before generating your roadmap.')
+      setWarning(L.warnGenerate)
       if (warnTimer.current) clearTimeout(warnTimer.current)
       warnTimer.current = setTimeout(() => setWarning(''), 4000)
       return
@@ -398,12 +440,12 @@ export default function ProjectPlanner() {
     const common = { width: w, minWidth: w, maxWidth: w } as React.CSSProperties
     switch (key) {
       case 'drag':
-        return <div key={key} className="pp-cell pp-drag" style={common} title="Drag to reorder">⠿</div>
+        return <div key={key} className="pp-cell pp-drag" style={common} title={L.dragReorder}>⠿</div>
       case 'num':
         return <div key={key} className="pp-cell pp-num" style={common}>{t.id}</div>
       case 'name':
         return <div key={key} className="pp-cell" style={common}>
-          <input className="pp-input" value={t.name} placeholder="Task name…"
+          <input className="pp-input" value={t.name} placeholder={L.taskNamePh}
             onChange={e => update(t.id, { name: e.target.value })} />
         </div>
       case 'days':
@@ -413,7 +455,7 @@ export default function ProjectPlanner() {
         </div>
       case 'deps':
         return <div key={key} className="pp-cell" style={common}>
-          <input className="pp-input" value={t.deps.join(',')} placeholder="e.g. 1,2"
+          <input className="pp-input" value={t.deps.join(',')} placeholder={L.depsPh}
             onChange={e => update(t.id, { deps: e.target.value.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) })} />
         </div>
       case 'start':
@@ -422,12 +464,12 @@ export default function ProjectPlanner() {
         return <div key={key} className="pp-cell pp-ro" style={common}>{sc ? fmtDay(sc.end) : '—'}</div>
       case 'cat':
         return <div key={key} className="pp-cell pp-catcell" style={common}>
-          <button className="pp-dot" style={{ background: CATS[t.cat] }} title="Click to change color"
+          <button className="pp-dot" style={{ background: CATS[t.cat] }} title={L.changeColor}
             onClick={() => cycleCat(t.id)} />
         </div>
       case 'del':
         return <div key={key} className="pp-cell pp-delcell" style={common}>
-          <button className="pp-del" title="Delete task" onClick={() => removeTask(t.id)}>×</button>
+          <button className="pp-del" title={L.deleteTask} onClick={() => removeTask(t.id)}>×</button>
         </div>
     }
   }
@@ -441,38 +483,38 @@ export default function ProjectPlanner() {
             key={p.id}
             className={`pp-projtab${p.id === activeId ? ' active' : ''}`}
             onClick={() => switchProject(p.id)}
-            title={p.name || 'Untitled'}
+            title={p.name || L.untitled}
           >
-            <span className="pp-projtab-name">{p.name || 'Untitled'}</span>
+            <span className="pp-projtab-name">{p.name || L.untitled}</span>
             {projects.length > 1 && (
-              <button className="pp-projtab-x" title="Close project" onClick={e => { e.stopPropagation(); closeProject(p.id) }}>×</button>
+              <button className="pp-projtab-x" title={L.closeProject} onClick={e => { e.stopPropagation(); closeProject(p.id) }}>×</button>
             )}
           </div>
         ))}
-        <button className="pp-projtab-add" onClick={addProject} title="New project">+ New</button>
+        <button className="pp-projtab-add" onClick={addProject} title={L.newProject}>{L.newBtn}</button>
       </div>
 
       {/* ── Header bar ── */}
       <div className="pp-header">
         <div className="pp-hleft">
-          <input className="pp-projname" value={projectName} onChange={e => setProjectName(e.target.value)} aria-label="Project name" />
+          <input className="pp-projname" value={projectName} onChange={e => setProjectName(e.target.value)} aria-label={L.projectNameAria} />
           <span className="pp-divider" />
           <label className="pp-field">
-            <span className="pp-flabel">Start date</span>
+            <span className="pp-flabel">{L.startDate}</span>
             <input className="pp-date" type="date" value={toISO(projectStart)}
               onChange={e => { const v = e.target.value; if (v) setProjectStart(midnight(new Date(v + 'T00:00:00'))) }} />
           </label>
-          <div className="pp-toggle" role="tablist" aria-label="Day counting mode">
-            <button className={business ? 'active' : ''} onClick={() => setBusiness(true)}>Business Days</button>
-            <button className={!business ? 'active' : ''} onClick={() => setBusiness(false)}>Calendar Days</button>
+          <div className="pp-toggle" role="tablist" aria-label={L.dayModeAria}>
+            <button className={business ? 'active' : ''} onClick={() => setBusiness(true)}>{L.businessDays}</button>
+            <button className={!business ? 'active' : ''} onClick={() => setBusiness(false)}>{L.calendarDays}</button>
           </div>
-          <button className="pp-btn primary" onClick={generate}>Generate Plan</button>
+          <button className="pp-btn primary" onClick={generate}>{L.generatePlan}</button>
         </div>
         <div className="pp-hright">
-          <button className="pp-btn outline" onClick={() => setSummaryOpen(true)}>Summary</button>
-          <button className="pp-btn outline" onClick={exportExcel}>Export Excel</button>
-          <button className="pp-btn outline" onClick={pasteRows} title={`Paste rows from Excel (${pasteKey})`}>Paste Rows</button>
-          <button className="pp-btn primary" onClick={addTask}>Add Task</button>
+          <button className="pp-btn outline" onClick={() => setSummaryOpen(true)}>{L.summary}</button>
+          <button className="pp-btn outline" onClick={exportExcel}>{L.exportExcel}</button>
+          <button className="pp-btn outline" onClick={pasteRows} title={`${L.statusHint} ${pasteKey}`}>{L.pasteRows}</button>
+          <button className="pp-btn primary" onClick={addTask}>{L.addTask}</button>
         </div>
       </div>
 
@@ -485,7 +527,7 @@ export default function ProjectPlanner() {
           <div className="pp-thead" style={{ height: HEADER_H }}>
             {COLS.map((c, ci) => (
               <div key={c.key} className="pp-th" style={{ width: colW[ci], minWidth: colW[ci], maxWidth: colW[ci] }}>
-                <span>{c.label}</span>
+                <span>{colLabel[c.key]}</span>
                 <span className="pp-resize" onMouseDown={e => startResize(ci, e)} />
               </div>
             ))}
@@ -511,7 +553,7 @@ export default function ProjectPlanner() {
         {/* Gantt */}
         <div className="pp-gantt">
           {cycle ? (
-            <div className="pp-cycle">⚠ Circular dependency detected — fix the “Depends On” references to see the timeline.</div>
+            <div className="pp-cycle">⚠ {L.cycle}</div>
           ) : (
             <div className="pp-gscroll" ref={ganttRef} onScroll={() => onScroll('gantt')}>
               <div style={{ width: totalW, position: 'relative' }}>
@@ -580,7 +622,7 @@ export default function ProjectPlanner() {
                       <div key={t.id}
                         className={`pp-bar${selected === t.id ? ' sel' : ''}`}
                         style={{ left, width, top: ri * ROW_H + 6, height: ROW_H - 12, background: CATS[t.cat] }}
-                        title={`${t.name || 'Untitled'} · ${t.days} day${t.days === 1 ? '' : 's'}`}
+                        title={`${t.name || L.untitled} · ${t.days} ${L.day}${lang === 'en' && t.days !== 1 ? 's' : ''}`}
                         onClick={() => setSelected(t.id)}>
                         <span className="pp-barlabel">{t.name}</span>
                       </div>
@@ -596,11 +638,11 @@ export default function ProjectPlanner() {
       {/* ── Status bar ── */}
       <div className="statusbar">
         <span className="chip chip-ok">LIVE</span>
-        <span>{tasks.length} task{tasks.length === 1 ? '' : 's'}</span>
+        <span>{tasks.length} {L.task}{lang === 'en' && tasks.length !== 1 ? 's' : ''}</span>
         <span>·</span>
-        <span>{totalDays} work days</span>
-        {projEnd && <><span>·</span><span>ends {fmtDay(projEnd)}</span></>}
-        <span style={{ marginLeft: 'auto' }}>Paste rows with {pasteKey} · Drag to reorder · Click category dot to change color</span>
+        <span>{totalDays} {L.workDays}</span>
+        {projEnd && <><span>·</span><span>{L.ends} {fmtDay(projEnd)}</span></>}
+        <span style={{ marginLeft: 'auto' }}>{L.statusHint} {pasteKey} · {L.dragHint} · {L.colorHint}</span>
       </div>
 
       {/* ── Summary modal ── */}
@@ -609,19 +651,19 @@ export default function ProjectPlanner() {
           <div className="pp-modal" onClick={e => e.stopPropagation()}>
             <div className="pp-modal-hd">
               <div>
-                <div className="pp-modal-title">{projectName || 'Untitled project'}</div>
+                <div className="pp-modal-title">{projectName || L.untitledProject}</div>
                 <div className="pp-modal-sub">
-                  {projBegin && projEnd ? `${fmtDay(projBegin)} – ${fmtDay(projEnd)}` : 'No schedule yet'}
+                  {projBegin && projEnd ? `${fmtDay(projBegin)} – ${fmtDay(projEnd)}` : L.noSchedule}
                 </div>
               </div>
-              <button className="pp-btn outline" onClick={() => setSummaryOpen(false)}>Close</button>
+              <button className="pp-btn outline" onClick={() => setSummaryOpen(false)}>{L.close}</button>
             </div>
 
             <div className="pp-stats">
               {[
-                ['Tasks', tasks.length, ''],
-                ['Calendar Days', calDuration, 'start → finish'],
-                ['Dependencies', depCount, 'task links'],
+                [L.tasks, tasks.length, ''],
+                [L.calDaysLbl, calDuration, L.startFinish],
+                [L.dependencies, depCount, L.taskLinks],
               ].map(([l, v, sub]) => (
                 <div key={l as string} className="pp-stat">
                   <div className="pp-stat-num">{v as number}</div>
@@ -632,31 +674,31 @@ export default function ProjectPlanner() {
             </div>
 
             <div className="pp-modal-sec">
-              <div className="pp-sec-title">Timeline</div>
+              <div className="pp-sec-title">{L.timeline}</div>
               <div className="pp-timeline">
-                <div><span className="pp-tl-lbl">Start date</span><span>{projBegin ? fmtDay(projBegin) : '—'}</span></div>
-                <div><span className="pp-tl-lbl">End date</span><span>{projEnd ? fmtDay(projEnd) : '—'}</span></div>
-                <div><span className="pp-tl-lbl">Calendar span</span><span>{calDuration} days</span></div>
-                <div><span className="pp-tl-lbl">Total work effort</span><span>{totalDays} work days</span></div>
-                <div><span className="pp-tl-lbl">Counting mode</span><span>{business ? 'Business days' : 'Calendar days'}</span></div>
+                <div><span className="pp-tl-lbl">{L.startDate}</span><span>{projBegin ? fmtDay(projBegin) : '—'}</span></div>
+                <div><span className="pp-tl-lbl">{L.endDate}</span><span>{projEnd ? fmtDay(projEnd) : '—'}</span></div>
+                <div><span className="pp-tl-lbl">{L.calSpan}</span><span>{calDuration} {L.days}</span></div>
+                <div><span className="pp-tl-lbl">{L.totalEffort}</span><span>{totalDays} {L.workDays}</span></div>
+                <div><span className="pp-tl-lbl">{L.countingMode}</span><span>{business ? L.bDays : L.cDays}</span></div>
               </div>
             </div>
 
             <div className="pp-modal-sec">
-              <div className="pp-sec-title">Longest tasks</div>
+              <div className="pp-sec-title">{L.longest}</div>
               <div className="pp-toplist">
                 {top3.map(t => (
                   <div key={t.id} className="pp-topitem">
                     <span className="pp-dot" style={{ background: CATS[t.cat], cursor: 'default' }} />
-                    <span className="pp-topname">{t.name || 'Untitled'}</span>
-                    <span className="pp-topdays">{t.days} days</span>
+                    <span className="pp-topname">{t.name || L.untitled}</span>
+                    <span className="pp-topdays">{t.days} {L.days}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="pp-modal-ft">
-              <button className="pp-btn primary" onClick={exportExcel}>Export Excel</button>
+              <button className="pp-btn primary" onClick={exportExcel}>{L.exportExcel}</button>
             </div>
           </div>
         </div>
