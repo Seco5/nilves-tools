@@ -166,16 +166,28 @@ export default function TCKNToolClient() {
       {/* Ana Kart */}
       <section className="space-y-4">
         {single && (
-          <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-8 py-8 text-center">
-            <p className="mb-3 text-xs uppercase tracking-widest text-[var(--muted)]">{t.idLabel}</p>
-            <p className="font-mono text-4xl font-bold tracking-[0.15em] text-[var(--teal)]">{list[0]}</p>
-            <button
-              onClick={() => copy(list[0], '0')}
-              className="absolute right-4 top-4 rounded-lg p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface2)] hover:text-[var(--teal)]"
-              title={t.copy}
-            >
-              {copied === '0' ? <CheckCircle2 size={16} className="text-[var(--teal)]" /> : <Copy size={16} />}
-            </button>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-10 text-center">
+            <p className="mb-5 text-xs uppercase tracking-widest text-[var(--muted)]">{t.idLabel}</p>
+            <div className="flex items-center justify-center gap-4">
+              <p className="font-mono text-5xl font-bold tabular-nums tracking-[0.2em] text-[#22c55e]">{list[0]}</p>
+              <button
+                onClick={() => copy(list[0], '0')}
+                className="flex items-center gap-2 rounded-xl border border-[var(--border2)] bg-[var(--surface2)] px-4 py-2.5 text-sm font-medium text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"
+                title={t.copy}
+              >
+                {copied === '0' ? (
+                  <>
+                    <CheckCircle2 size={16} className="text-[#16a34a]" />
+                    <span className="text-[#16a34a]">{t.copied}</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={16} />
+                    {t.copy}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
 
@@ -192,10 +204,10 @@ export default function TCKNToolClient() {
                 </div>
                 <button
                   onClick={() => copy(tc, String(i))}
-                  className="ml-4 rounded-lg p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface2)] hover:text-[var(--teal)]"
+                  className="ml-4 rounded-lg border border-[var(--border2)] p-2.5 text-[var(--muted2)] transition-all hover:border-[#16a34a] hover:text-[#16a34a]"
                   title={t.copy}
                 >
-                  {copied === String(i) ? <CheckCircle2 size={15} className="text-[var(--teal)]" /> : <Copy size={15} />}
+                  {copied === String(i) ? <CheckCircle2 size={15} className="text-[#16a34a]" /> : <Copy size={15} />}
                 </button>
               </div>
             ))}
@@ -211,25 +223,25 @@ export default function TCKNToolClient() {
               max={50}
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              className="w-14 rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-2 py-1.5 text-center text-sm text-[var(--text)] focus:border-[var(--teal)] focus:outline-none"
+              className="w-16 rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-2 py-3 text-center text-sm text-[var(--text)] focus:border-[#16a34a] focus:outline-none"
             />
           </div>
           <button
             onClick={generate}
-            className="flex items-center gap-2.5 rounded-xl bg-[var(--teal)] px-9 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95"
+            className="flex min-w-[100px] items-center justify-center gap-2 rounded-xl bg-[#16a34a] px-7 py-3 text-[15px] font-semibold text-white transition-all duration-150 hover:bg-[#15803d] active:scale-[0.98]"
           >
-            <RefreshCw size={17} />
+            <RefreshCw size={16} />
             {t.generate}
           </button>
           {!single && (
             <button
               onClick={() => copy(list.join('\n'), 'all')}
-              className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2 text-sm text-[var(--muted2)] transition-colors hover:border-[var(--border2)] hover:text-[var(--text)]"
+              className="flex items-center gap-2 rounded-xl border border-[var(--border2)] px-4 py-3 text-sm text-[var(--muted2)] transition-colors hover:border-[#16a34a] hover:text-[#16a34a]"
             >
               {copied === 'all' ? (
                 <>
-                  <CheckCircle2 size={13} className="text-[var(--teal)]" />
-                  <span className="text-[var(--teal)]">{t.copied}</span>
+                  <CheckCircle2 size={14} className="text-[#16a34a]" />
+                  <span className="text-[#16a34a]">{t.copied}</span>
                 </>
               ) : (
                 <>
@@ -243,7 +255,7 @@ export default function TCKNToolClient() {
       </section>
 
       {/* Yasal Uyarı */}
-      <section className="space-y-3 rounded-2xl border border-[var(--yellow)]/25 bg-[var(--yellow)]/10 px-6 py-5">
+      <section className="space-y-3 rounded-2xl border border-[var(--yellow)]/20 bg-[var(--yellow)]/[0.05] px-6 py-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--yellow)]">{t.legalTitle}</p>
         <ul className="space-y-3 text-sm leading-7 text-[var(--muted2)]">
           {t.legal.map((line, i) => (
@@ -276,7 +288,7 @@ export default function TCKNToolClient() {
             <tbody>
               {t.rows.map(([digit, rule], i) => (
                 <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                  <td className="px-5 py-4 font-mono text-xs text-[var(--teal)]">{digit}</td>
+                  <td className="px-5 py-4 font-mono text-xs text-[var(--muted2)]">{digit}</td>
                   <td className="px-5 py-4 leading-6 text-[var(--muted2)]">{rule}</td>
                 </tr>
               ))}
