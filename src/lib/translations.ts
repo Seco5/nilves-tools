@@ -43,6 +43,7 @@ export const translations = {
       barcodeQr: 'Barkod & QR',
       sqlFormatter: 'SQL Formatlayıcı',
       mongoQueryBuilder: 'Mongo Sorgu Oluşturucu',
+      imageDiff: 'Görsel Karşılaştırma',
     },
     home: {
       eyebrow: 'Ücretsiz · Tarayıcı tabanlı · Veri saklanmaz',
@@ -129,6 +130,7 @@ export const translations = {
       barcodeQr: 'Barcode & QR',
       sqlFormatter: 'SQL Formatter',
       mongoQueryBuilder: 'Mongo Query Builder',
+      imageDiff: 'Image Comparison',
     },
     home: {
       eyebrow: 'Free · Browser-based · No data stored',

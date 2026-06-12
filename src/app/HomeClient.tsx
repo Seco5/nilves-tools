@@ -49,6 +49,7 @@ const CATEGORIES: Category[] = [
     tkey: 'nav.testers',
     tools: [
       { tkey: 'tools.regexTester',     desc: 'Test and debug regular expressions',      href: '/regex-tester' },
+      { tkey: 'tools.imageDiff',       desc: 'Compare two images, find differences',    href: '/image-diff' },
     ],
   },
   {

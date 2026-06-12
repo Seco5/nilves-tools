@@ -49,6 +49,7 @@ const items: Item[] = [
 
   { kind: 'section', tkey: 'nav.testers' },
   { kind: 'link',    tkey: 'tools.regexTester',       href: '/regex-tester' },
+  { kind: 'link',    tkey: 'tools.imageDiff',         href: '/image-diff' },
 
   { kind: 'section', tkey: 'nav.turkish', flag: '🇹🇷' },
   { kind: 'link',    tkey: 'tools.tcknGenerator',     href: '/tckn-generator' },

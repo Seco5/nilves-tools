@@ -27,6 +27,7 @@ const toolRoutes = [
   '/sql-playground',
   '/project-planner',
   '/mongo-query-builder',
+  '/image-diff',
   '/contact',
   '/privacy',
 ]

@@ -2,7 +2,7 @@ import {
   Braces, GitCompareArrows, CodeXml, Database, ArrowLeftRight, FileText,
   Fingerprint, KeyRound, Hash, Pilcrow, Palette, QrCode, Binary, Link2,
   ShieldCheck, Clock, Calculator, AlarmClock, Regex, IdCard, Building2,
-  Landmark, CreditCard, GraduationCap, CalendarRange,
+  Landmark, CreditCard, GraduationCap, CalendarRange, Image as ImageIcon,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -31,6 +31,7 @@ export const TOOL_ICONS: Record<string, LucideIcon> = {
   '/cron-expression':       AlarmClock,
 
   '/regex-tester':          Regex,
+  '/image-diff':            ImageIcon,
 
   '/tckn-generator':        IdCard,
   '/vkn-generator':         Building2,
