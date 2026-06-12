@@ -61,6 +61,9 @@ const items: Item[] = [
 
   { kind: 'section', tkey: 'nav.education' },
   { kind: 'link',    tkey: 'tools.sqlPlayground',     href: '/sql-playground' },
+
+  { kind: 'section', tkey: 'nav.database' },
+  { kind: 'link',    tkey: 'tools.mongoQueryBuilder', href: '/mongo-query-builder' },
 ]
 
 export default function Sidebar() {

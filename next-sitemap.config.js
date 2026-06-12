@@ -26,6 +26,7 @@ const toolRoutes = [
   '/fake-person-data',
   '/sql-playground',
   '/project-planner',
+  '/mongo-query-builder',
 ]
 
 module.exports = {

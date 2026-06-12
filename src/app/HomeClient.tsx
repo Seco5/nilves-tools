@@ -72,6 +72,12 @@ const CATEGORIES: Category[] = [
       { tkey: 'tools.sqlPlayground',  desc: 'Learn SQL with live examples',          href: '/sql-playground' },
     ],
   },
+  {
+    tkey: 'nav.database',
+    tools: [
+      { tkey: 'tools.mongoQueryBuilder', desc: 'Build filters and pipelines, get code', href: '/mongo-query-builder' },
+    ],
+  },
 ]
 
 export default function HomeClient() {

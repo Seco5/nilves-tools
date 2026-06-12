@@ -39,6 +39,7 @@ export const TOOL_ICONS: Record<string, LucideIcon> = {
 
   '/project-planner':       CalendarRange,
   '/sql-playground':        GraduationCap,
+  '/mongo-query-builder':   Database,
 }
 
 export function ToolIcon({ href, size = 16, className }: { href: string; size?: number; className?: string }) {

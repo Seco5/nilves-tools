@@ -14,6 +14,7 @@ export const translations = {
       turkish: 'Türkiye Araçları',
       education: 'Eğitim',
       productivity: 'Verimlilik',
+      database: 'Veritabanı',
     },
     tools: {
       jsonFormatter: 'JSON Formatlayıcı',
@@ -41,6 +42,7 @@ export const translations = {
       projectPlanner: 'Proje Planlayıcı',
       barcodeQr: 'Barkod & QR',
       sqlFormatter: 'SQL Formatlayıcı',
+      mongoQueryBuilder: 'Mongo Sorgu Oluşturucu',
     },
     home: {
       eyebrow: 'Ücretsiz · Tarayıcı tabanlı · Veri saklanmaz',
@@ -98,6 +100,7 @@ export const translations = {
       turkish: 'Turkish Tools',
       education: 'Education',
       productivity: 'Productivity',
+      database: 'Database',
     },
     tools: {
       jsonFormatter: 'JSON Formatter',
@@ -125,6 +128,7 @@ export const translations = {
       projectPlanner: 'Project Planner',
       barcodeQr: 'Barcode & QR',
       sqlFormatter: 'SQL Formatter',
+      mongoQueryBuilder: 'Mongo Query Builder',
     },
     home: {
       eyebrow: 'Free · Browser-based · No data stored',
