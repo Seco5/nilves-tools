@@ -5,6 +5,7 @@ import './globals.css'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import Toast from '@/components/Toast'
+import Footer from '@/components/Footer'
 import Providers from '@/components/Providers'
 
 const bricolage = Bricolage_Grotesque({
@@ -83,7 +84,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <div className="workspace">
             <Sidebar />
-            <main className="content">{children}</main>
+            <main className="content">
+              {children}
+              <Footer />
+            </main>
           </div>
           <Toast />
         </Providers>

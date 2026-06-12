@@ -27,6 +27,8 @@ const toolRoutes = [
   '/sql-playground',
   '/project-planner',
   '/mongo-query-builder',
+  '/contact',
+  '/privacy',
 ]
 
 module.exports = {

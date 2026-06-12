@@ -251,6 +251,16 @@ body {
 .tckn-table tbody tr:hover td { background: var(--surface2); }
 .regex-pat-row:hover td.mono-cell { color: var(--teal); }
 
+/* ─── Footer ─────────────────────────────────────────────────── */
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted2);
+  transition: color .15s;
+}
+.footer-link:hover { color: #1D9E75; }
+
 /* IBAN redesign — two-column generator layout */
 .iban-grid {
   display: grid;
