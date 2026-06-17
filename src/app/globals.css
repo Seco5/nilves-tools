@@ -1393,6 +1393,8 @@ textarea:focus { background: #0b0b0e; }
 .bq-tab:hover { color: var(--text); }
 .bq-tab.active { color: var(--teal2); border-bottom-color: var(--teal); }
 .bq-body { flex: 1; overflow: auto; }
+@keyframes bq-spin { to { transform: rotate(360deg); } }
+.bq-spin { animation: bq-spin .8s linear infinite; }
 
 .bq-section-title { font-family: var(--display); font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .bq-divider { height: 1px; background: var(--border); margin: 18px 0; }
